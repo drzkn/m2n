@@ -1,6 +1,5 @@
 import { Client } from "@notionhq/client";
 import {
-  NotionBlock,
   NotionBlocksResponse,
   NotionPageResponse,
 } from "../../types/notion";

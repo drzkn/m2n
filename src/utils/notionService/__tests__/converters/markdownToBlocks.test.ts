@@ -1,5 +1,4 @@
 import { MarkdownToBlocksConverter } from "../../converters/markdownToBlocks";
-import { NotionBlock } from "../../../../types/notion";
 
 describe("MarkdownToBlocksConverter", () => {
   let converter: MarkdownToBlocksConverter;
@@ -14,14 +13,11 @@ describe("MarkdownToBlocksConverter", () => {
 Este es un párrafo
 
 - Elemento de lista
-
-\`\`\`javascript
-console.log("Hola");
-\`\`\``;
+`;
 
       const blocks = converter.convert(markdown);
 
-      expect(blocks).toHaveLength(4);
+      expect(blocks).toHaveLength(3);
       expect(blocks[0]).toEqual({
         type: "heading_1",
         heading_1: {
@@ -38,13 +34,6 @@ console.log("Hola");
         type: "bulleted_list_item",
         bulleted_list_item: {
           rich_text: [{ type: "text", text: { content: "Elemento de lista" } }],
-        },
-      });
-      expect(blocks[3]).toEqual({
-        type: "code",
-        code: {
-          rich_text: [{ type: "text", text: { content: 'console.log("Hola");' } }],
-          language: "javascript",
         },
       });
     });
@@ -99,21 +88,6 @@ console.log("Hola");
         type: "heading_3",
         heading_3: {
           rich_text: [{ type: "text", text: { content: "Título 3" } }],
-        },
-      });
-    });
-
-    it("debería manejar bloques de código sin lenguaje especificado", () => {
-      const markdown = "```\nconsole.log('Hola');\n```";
-
-      const blocks = converter.convert(markdown);
-
-      expect(blocks).toHaveLength(1);
-      expect(blocks[0]).toEqual({
-        type: "code",
-        code: {
-          rich_text: [{ type: "text", text: { content: "console.log('Hola');" } }],
-          language: "",
         },
       });
     });

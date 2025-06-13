@@ -1,6 +1,5 @@
 import notionApiClient from '../../config';
 import { queryDatabase } from '../queryDatabase';
-import axios from 'axios';
 
 // Mock de axios
 jest.mock('../../config', () => ({

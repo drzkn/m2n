@@ -1,4 +1,3 @@
-import { Client } from "@notionhq/client";
 import { NotionService } from "../notionService";
 import { NotionBlocksResponse, NotionPageResponse } from "../../../types/notion";
 
