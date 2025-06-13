@@ -1,0 +1,58 @@
+{
+  "name": "m2n",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc -b && vite build",
+    "lint": "eslint .",
+    "preview": "vite preview",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "prepare": "husky install",
+    "test:connection": "npx ts-node src/examples/config.examples.ts",
+    "test:connection:watch": "nodemon --watch src/examples/config.examples.ts --watch src/services --ext ts --exec 'npm run test:connection'"
+  },
+  "dependencies": {
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0",
+    "@notionhq/client": "^2.2.14",
+    "@types/react": "^19.1.8",
+    "@types/react-dom": "^19.1.6",
+    "axios": "^1.9.0",
+    "dotenv": "^16.5.0",
+    "express": "^5.1.0",
+    "node-fetch": "^3.3.2"
+  },
+  "keywords": [
+    "notion",
+    "markdown",
+    "sync"
+  ],
+  "devDependencies": {
+    "@eslint/js": "^9.25.0",
+    "@types/react": "^19.1.2",
+    "@types/react-dom": "^19.1.2",
+    "@vitejs/plugin-react": "^4.4.1",
+    "eslint": "^9.25.0",
+    "eslint-plugin-react-hooks": "^5.2.0",
+    "eslint-plugin-react-refresh": "^0.4.19",
+    "globals": "^16.0.0",
+    "typescript": "~5.8.3",
+    "typescript-eslint": "^8.30.1",
+    "vite": "^6.3.5",
+    "@types/axios": "^0.9.36",
+    "@types/jest": "^29.5.14",
+    "@types/node": "^20.17.57",
+    "autoprefixer": "^10.4.21",
+    "husky": "^9.0.11",
+    "jest": "^29.7.0",
+    "lint-staged": "^15.2.2",
+    "nodemon": "^3.1.10",
+    "postcss": "^8.5.5",
+    "tailwindcss": "^4.1.10",
+    "ts-jest": "^29.3.4",
+    "ts-node": "^10.9.2"
+  }
+}
