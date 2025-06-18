@@ -1,10 +1,20 @@
 import axios from 'axios';
 
+// Función para obtener variables de entorno compatibles con Vite y Node.js
+const getEnvVar = (key: string): string | undefined => {
+  // En Vite, usar import.meta.env
+  if (typeof import.meta !== 'undefined' && import.meta.env) {
+    return import.meta.env[key];
+  }
+  // En Node.js, usar process.env
+  return process.env[key];
+};
+
 // Validación de variables de entorno requeridas
 const requiredEnvVars = {
-  NOTION_API_KEY: process.env.NOTION_API_KEY,
-  NOTION_BASE_URL: process.env.NOTION_BASE_URL,
-  NOTION_API_VERSION: process.env.NOTION_API_VERSION,
+  NOTION_API_KEY: getEnvVar('NOTION_API_KEY'),
+  NOTION_BASE_URL: getEnvVar('NOTION_BASE_URL'),
+  NOTION_API_VERSION: getEnvVar('NOTION_API_VERSION'),
 };
 
 // Verificar que todas las variables necesarias estén presentes

@@ -11,7 +11,7 @@
     "test": "jest",
     "test:watch": "jest --watch",
     "prepare": "husky install",
-    "test:connection": "npx ts-node src/examples/config.examples.ts",
+    "test:connection": "npx tsx src/examples/config.examples.ts",
     "test:connection:watch": "nodemon --watch src/examples/config.examples.ts --watch src/services --ext ts --exec 'npm run test:connection'"
   },
   "dependencies": {

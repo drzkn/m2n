@@ -4,11 +4,27 @@ import { getDatabase } from '../services';
 import { queryDatabase } from '../services';
 import * as fs from 'fs';
 import * as path from 'path';
+import { fileURLToPath } from 'url';
+
+// Función para obtener variables de entorno compatibles con Vite y Node.js
+const getEnvVar = (key: string): string | undefined => {
+  // En Vite, usar import.meta.env
+  if (typeof import.meta !== 'undefined' && import.meta.env) {
+    return import.meta.env[key];
+  }
+  // En Node.js, usar process.env
+  return process.env[key];
+};
+
+// Función para obtener __dirname en ESM
+const getDirname = () => {
+  return path.dirname(fileURLToPath(import.meta.url));
+};
 
 async function testNotionConnection() {
   try {
-    const databaseId = process.env.NOTION_DATABASE_ID;
-    const apiKey = process.env.NOTION_API_KEY;
+    const databaseId = getEnvVar('NOTION_DATABASE_ID');
+    const apiKey = getEnvVar('NOTION_API_KEY');
 
     console.log('API Key configurada:', apiKey ? 'Sí' : 'No');
     console.log('Database ID configurado:', databaseId ? 'Sí' : 'No');
@@ -34,7 +50,7 @@ async function testNotionConnection() {
     console.log('✅getUser');
 
     // Guardar los resultados en un archivo JSON
-    const outputDir = path.join(__dirname, '../../output');
+    const outputDir = path.join(getDirname(), '../../output');
 
     console.log('Volcando el contenido ⏳⏳⏳⏳⏳⏳')
     if (!fs.existsSync(outputDir)) {
