@@ -1,6 +1,5 @@
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
 import notionLogo from './assets/notion.svg'
+import markdownLogo from './assets/markdown.svg';
 import './App.css'
 import { getDatabase } from './services'
 import { useState } from 'react'
@@ -43,17 +42,14 @@ function App() {
   return (
     <>
       <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
         <a href="https://notion.so" target="_blank">
           <img src={notionLogo} className="logo notion" alt="Notion Logo" />
         </a>
+        <a href="https://docs.github.com/es/get-started/writing-on-github/getting-started-with-writing-and-formatting-on-github/basic-writing-and-formatting-syntax" target="_blank">
+          <img src={markdownLogo} className="logo markdown" alt="Notion Logo" />
+        </a>
       </div>
-      <h1>Vite + React</h1>
+      <h1>Notion 2 markdown</h1>
       <div className="card">
         <button
           onClick={handleGetDatabase}
