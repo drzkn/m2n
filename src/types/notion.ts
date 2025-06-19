@@ -1,6 +1,6 @@
-import { Client } from "@notionhq/client";
+// import { Client } from "@notionhq/client";
 
-type BlockObjectRequest = Parameters<Client["blocks"]["children"]["append"]>[0]["children"][0];
+// type BlockObjectRequest = Parameters<Client["blocks"]["children"]["append"]>[0]["children"][0];
 
 export type NotionBlock = {
   type: "paragraph" | "heading_1" | "heading_2" | "heading_3" | "bulleted_list_item" | "numbered_list_item" | "code";
