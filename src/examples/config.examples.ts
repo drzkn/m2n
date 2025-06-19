@@ -1,5 +1,5 @@
 import 'dotenv/config';
-import { getDatabaseUseCase, getUserUseCase, queryDatabaseUseCase } from '../infrastructure/di/container';
+import { getDatabaseUseCase, getUserUseCase, queryDatabaseUseCase, getPageUseCase } from '../infrastructure/di/container';
 import * as fs from 'fs';
 import * as path from 'path';
 import { fileURLToPath } from 'url';
@@ -59,6 +59,14 @@ async function testNotionConnection() {
     const userInfo = await getUserUseCase.execute();
     console.log('✅GetUserUseCase');
 
+    // Obtener una página específica usando el caso de uso (ejemplo con la primera página)
+    let pageInfo = null;
+    if (databaseQuery.length > 0) {
+      const firstPageId = databaseQuery[0].id;
+      pageInfo = await getPageUseCase.execute(firstPageId);
+      console.log('✅GetPageUseCase');
+    }
+
     // Guardar los resultados en un archivo JSON
     const outputDir = path.join(getDirname(), '../../output');
 
@@ -73,6 +81,7 @@ async function testNotionConnection() {
       'databaseInfo': databaseInfo.toJSON(),
       'userInfo': userInfo.toJSON(),
       'databaseQuery': databaseQuery.map(page => page.toJSON()),
+      'pageInfo': pageInfo ? pageInfo.toJSON() : null,
       timestamp: new Date().toISOString()
     };
 
@@ -83,6 +92,9 @@ async function testNotionConnection() {
     console.log(`- Base de datos: ${databaseInfo.title} (${databaseInfo.id})`);
     console.log(`- Usuario: ${userInfo.name || 'Sin nombre'} (${userInfo.id})`);
     console.log(`- Páginas encontradas: ${databaseQuery.length}`);
+    if (pageInfo) {
+      console.log(`- Página obtenida: ${pageInfo.id}`);
+    }
 
   } catch (error) {
     console.error('Error en la prueba:', error);

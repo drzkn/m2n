@@ -1,8 +1,9 @@
 import { AxiosHttpClient } from '../../adapters/output/infrastructure/http/AxiosHttpClient';
-import { NotionRepository } from '../../adapters/output/infrastructure/notion/NotionRepository';
+import { NotionRepository } from '../../adapters/output/infrastructure/notion/NotionRepository/NotionRepository';
 import { GetDatabaseUseCase } from '../../domain/usecases/GetDatabaseUseCase';
 import { GetUserUseCase } from '../../domain/usecases/GetUserUseCase';
 import { QueryDatabaseUseCase } from '../../domain/usecases/QueryDatabaseUseCase';
+import { GetPageUseCase } from '../../domain/usecases/GetPageUseCase';
 
 // Función para obtener variables de entorno compatibles con Vite y Node.js
 const getEnvVar = (key: string): string | undefined => {
@@ -44,6 +45,7 @@ const notionRepository = new NotionRepository(httpClient);
 const getDatabaseUseCase = new GetDatabaseUseCase(notionRepository);
 const getUserUseCase = new GetUserUseCase(notionRepository);
 const queryDatabaseUseCase = new QueryDatabaseUseCase(notionRepository);
+const getPageUseCase = new GetPageUseCase(notionRepository);
 
 // Contenedor de dependencias
 export const container = {
@@ -55,6 +57,7 @@ export const container = {
   getDatabaseUseCase,
   getUserUseCase,
   queryDatabaseUseCase,
+  getPageUseCase,
 
   // Configuración
   config: {
@@ -67,4 +70,4 @@ export const container = {
 };
 
 // Exportar casos de uso para uso directo
-export { getDatabaseUseCase, getUserUseCase, queryDatabaseUseCase }; 
+export { getDatabaseUseCase, getUserUseCase, queryDatabaseUseCase, getPageUseCase }; 
