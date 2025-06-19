@@ -1,7 +1,5 @@
 import 'dotenv/config';
-import { getUser } from '../services/getUser';
-import { getDatabase } from '../services';
-import { queryDatabase } from '../services';
+import { getDatabaseUseCase, getUserUseCase, queryDatabaseUseCase } from '../infrastructure/di/container';
 import * as fs from 'fs';
 import * as path from 'path';
 import { fileURLToPath } from 'url';
@@ -21,6 +19,18 @@ const getDirname = () => {
   return path.dirname(fileURLToPath(import.meta.url));
 };
 
+// Tipo para errores de Notion
+interface NotionError {
+  response?: {
+    status?: number;
+    data?: {
+      message?: string;
+      code?: string;
+      request_id?: string;
+    };
+  };
+}
+
 async function testNotionConnection() {
   try {
     const databaseId = getEnvVar('NOTION_DATABASE_ID');
@@ -37,17 +47,17 @@ async function testNotionConnection() {
       throw new Error('NOTION_API_KEY no está configurado en las variables de entorno');
     }
 
-    // Obtener información de la base de datos
-    const databaseInfo = await getDatabase(databaseId);
-    console.log('✅getDatabase');
+    // Obtener información de la base de datos usando el caso de uso
+    const databaseInfo = await getDatabaseUseCase.execute(databaseId);
+    console.log('✅GetDatabaseUseCase');
 
-    // Obtener información de la base de datos
-    const databaseQuery = await queryDatabase(databaseId);
-    console.log('✅queryDatabase');
+    // Consultar la base de datos usando el caso de uso
+    const databaseQuery = await queryDatabaseUseCase.execute(databaseId);
+    console.log('✅QueryDatabaseUseCase');
 
-    // Consultar la base de datos
-    const userInfo = await getUser();
-    console.log('✅getUser');
+    // Obtener información del usuario usando el caso de uso
+    const userInfo = await getUserUseCase.execute();
+    console.log('✅GetUserUseCase');
 
     // Guardar los resultados en un archivo JSON
     const outputDir = path.join(getDirname(), '../../output');
@@ -60,17 +70,31 @@ async function testNotionConnection() {
     const outputPath = path.join(outputDir, `notion-query.json`);
 
     const outputData = {
-      'databaseInfo': databaseInfo,
-      'userInfo': userInfo,
-      'databaseQuery': databaseQuery,
+      'databaseInfo': databaseInfo.toJSON(),
+      'userInfo': userInfo.toJSON(),
+      'databaseQuery': databaseQuery.map(page => page.toJSON()),
       timestamp: new Date().toISOString()
     };
 
     fs.writeFileSync(outputPath, JSON.stringify(outputData, null, 2));
     console.log(`\nResultados guardados en: ${outputPath}`);
 
+    console.log('\n📊 Resumen de la conexión:');
+    console.log(`- Base de datos: ${databaseInfo.title} (${databaseInfo.id})`);
+    console.log(`- Usuario: ${userInfo.name || 'Sin nombre'} (${userInfo.id})`);
+    console.log(`- Páginas encontradas: ${databaseQuery.length}`);
+
   } catch (error) {
     console.error('Error en la prueba:', error);
+
+    if (error && typeof error === 'object' && 'response' in error) {
+      const notionError = error as NotionError;
+      console.error('Detalles del error de Notion:');
+      console.error(`- Status: ${notionError.response?.status}`);
+      console.error(`- Mensaje: ${notionError.response?.data?.message}`);
+      console.error(`- Código: ${notionError.response?.data?.code}`);
+      console.error(`- Request ID: ${notionError.response?.data?.request_id}`);
+    }
   }
 }
 
