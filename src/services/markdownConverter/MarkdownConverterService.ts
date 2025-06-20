@@ -30,14 +30,8 @@ export class MarkdownConverterService {
     // Crear contenido Markdown
     let content = '';
 
-    // Agregar frontmatter con metadatos
-    content += this.generateFrontmatter(page, title);
-
     // Agregar título principal
     content += `# ${title}\n\n`;
-
-    // Agregar metadatos básicos
-    content += this.generateMetadataSection(page);
 
     // Agregar contenido de la página (si tiene bloques)
     content += this.generatePageContent(page);
@@ -66,14 +60,7 @@ export class MarkdownConverterService {
    * Genera un archivo índice con todas las páginas
    */
   generateIndexFile(pages: Page[]): MarkdownFile {
-    const timestamp = new Date().toISOString();
-
     let content = '';
-    content += `---\n`;
-    content += `title: "Índice de Páginas Exportadas"\n`;
-    content += `generated: "${timestamp}"\n`;
-    content += `total_pages: ${pages.length}\n`;
-    content += `---\n\n`;
 
     content += `# Índice de Páginas Exportadas\n\n`;
     content += `> Generado el ${new Date().toLocaleString('es-ES')}\n\n`;
@@ -144,50 +131,6 @@ export class MarkdownConverterService {
     const finalTitle = cleanTitle || pageId.substring(0, 8);
 
     return `${finalTitle}.md`;
-  }
-
-  private generateFrontmatter(page: Page, title: string): string {
-    let frontmatter = '---\n';
-    frontmatter += `title: "${title}"\n`;
-    frontmatter += `notion_id: "${page.id}"\n`;
-
-    if (page.createdTime) {
-      frontmatter += `created: "${page.createdTime}"\n`;
-    }
-
-    if (page.lastEditedTime) {
-      frontmatter += `updated: "${page.lastEditedTime}"\n`;
-    }
-
-    if (page.url) {
-      frontmatter += `notion_url: "${page.url}"\n`;
-    }
-
-    frontmatter += `exported: "${new Date().toISOString()}"\n`;
-    frontmatter += '---\n\n';
-
-    return frontmatter;
-  }
-
-  private generateMetadataSection(page: Page): string {
-    let metadata = '## Metadatos\n\n';
-    metadata += `- **ID de Notion:** \`${page.id}\`\n`;
-
-    if (page.createdTime) {
-      metadata += `- **Fecha de creación:** ${new Date(page.createdTime).toLocaleString('es-ES')}\n`;
-    }
-
-    if (page.lastEditedTime) {
-      metadata += `- **Última modificación:** ${new Date(page.lastEditedTime).toLocaleString('es-ES')}\n`;
-    }
-
-    if (page.url) {
-      metadata += `- **URL en Notion:** [Ver página](${page.url})\n`;
-    }
-
-    metadata += '\n---\n\n';
-
-    return metadata;
   }
 
   private generatePageContent(page: Page): string {
