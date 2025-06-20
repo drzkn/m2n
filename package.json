@@ -4,7 +4,7 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
+    "dev": "yarn clean-markdown && yarn download-markdown && vite",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview",
@@ -13,6 +13,7 @@
     "prepare": "husky install",
     "test:connection": "npx tsx src/examples/config.examples.ts",
     "test:connection:watch": "nodemon --watch src/examples/config.examples.ts --watch src/services --ext ts --exec 'npm run test:connection'",
+    "clean-markdown": "node scripts/cleanMarkdown.cjs",
     "download-markdown": "npx tsx scripts/directMarkdownDownload.ts",
     "download-markdown:old": "npx tsx scripts/notionToMarkdown.ts",
     "download-markdown:simple": "node scripts/downloadToMarkdown.cjs"
@@ -22,9 +23,13 @@
     "axios": "^1.9.0",
     "dotenv": "^16.5.0",
     "express": "^5.1.0",
+    "highlight.js": "^11.11.1",
     "node-fetch": "^3.3.2",
     "react": "^19.1.0",
-    "react-dom": "^19.1.0"
+    "react-dom": "^19.1.0",
+    "react-markdown": "^10.1.0",
+    "rehype-highlight": "^7.0.2",
+    "remark-gfm": "^4.0.1"
   },
   "keywords": [
     "notion",
@@ -48,6 +53,7 @@
     "jest": "^29.7.0",
     "lint-staged": "^15.2.2",
     "nodemon": "^3.1.10",
+    "open": "^10.1.2",
     "postcss": "^8.5.5",
     "tailwindcss": "^4.1.10",
     "ts-jest": "^29.3.4",

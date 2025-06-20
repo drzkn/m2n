@@ -96,7 +96,7 @@ export class MarkdownConverterService {
     });
 
     return {
-      filename: 'INDEX.md',
+      filename: 'index.md',
       content,
       metadata: {
         id: 'index',

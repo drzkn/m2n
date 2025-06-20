@@ -3,6 +3,7 @@
 .env.local
 .env.*.local
 *hex_architecture*
+.cursor
 
 /output
 

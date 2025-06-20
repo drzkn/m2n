@@ -1,291 +1,168 @@
-# React + TypeScript + Vite
+# M2N - Notion to Markdown Converter
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Un conversor de páginas de Notion a archivos Markdown utilizando arquitectura hexagonal con **visualizador integrado**.
 
-Currently, two official plugins are available:
+## Características
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- 🏗️ **Arquitectura Hexagonal**: Separación clara de responsabilidades
+- 🔄 **Conversión automática**: De Notion a Markdown
+- 📖 **Visualizador integrado**: Ver archivos Markdown directamente en la web
+- 📁 **Descarga directa**: Archivos guardados automáticamente en carpeta local
+- 🎯 **Sin confirmación**: Descarga automática sin popups del navegador
+- 🔍 **Búsqueda**: Filtrar archivos por nombre o título
+- 🎨 **Syntax Highlighting**: Código resaltado en el visualizador
+- 📊 **Interfaz React**: UI moderna y responsive
+- ⚡ **TypeScript**: Tipado fuerte y mejor experiencia de desarrollo
 
-## Expanding the ESLint configuration
+## Estructura del Proyecto
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default tseslint.config({
-  extends: [
-    // Remove ...tseslint.configs.recommended and replace with this
-    ...tseslint.configs.recommendedTypeChecked,
-    // Alternatively, use this for stricter rules
-    ...tseslint.configs.strictTypeChecked,
-    // Optionally, add this for stylistic rules
-    ...tseslint.configs.stylisticTypeChecked,
-  ],
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ["./tsconfig.node.json", "./tsconfig.app.json"],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-});
+```
+src/
+├── domain/           # Entidades y lógica de negocio
+├── ports/           # Interfaces (contratos)
+├── adapters/        # Implementaciones concretas
+├── services/        # Servicios de aplicación
+├── infrastructure/ # Configuración e inyección de dependencias
+├── components/     # Componentes React
+│   ├── MainPage/   # Página principal
+│   └── MarkdownViewer/ # Visualizador de Markdown
+└── utils/          # Utilidades
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## Configuración
 
-```js
-// eslint.config.js
-import reactX from "eslint-plugin-react-x";
-import reactDom from "eslint-plugin-react-dom";
+1. Copia el archivo de ejemplo de configuración:
 
-export default tseslint.config({
-  plugins: {
-    // Add the react-x and react-dom plugins
-    "react-x": reactX,
-    "react-dom": reactDom,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended typescript rules
-    ...reactX.configs["recommended-typescript"].rules,
-    ...reactDom.configs.recommended.rules,
-  },
-});
+```bash
+cp src/examples/config.examples.ts src/config/config.ts
 ```
 
-# M2N - Notion to Markdown
+2. Configura tus variables de entorno en `.env`:
 
-Aplicación para convertir contenido de Notion a Markdown utilizando una arquitectura hexagonal.
+```env
+VITE_NOTION_API_KEY=tu_notion_api_key
+VITE_NOTION_DATABASE_ID=tu_database_id
+```
 
-## 🚀 Funcionalidades
+## Uso
 
-### ✅ Implementadas
+### Interfaz Web con Visualizador
 
-- **🏗️ Arquitectura Hexagonal Completa**: Separación clara entre dominio, adaptadores e infraestructura
-- **📊 Consulta de Bases de Datos**: Obtener páginas de una base de datos de Notion
-- **📄 Obtención de Páginas**: Recuperar contenido completo de páginas individuales
-- **👤 Información de Usuario**: Obtener datos del usuario actual de Notion
-- **🔧 Inyección de Dependencias**: Contenedor DI automático multi-entorno
-- **🧪 Tests Unitarios**: Cobertura completa de casos de uso y repositorios
-- **📱 Interfaz Web**: UI React para interactuar con la aplicación
-- **💾 Exportación de Datos**: Procesamiento completo y descarga automática de resultados
-- **📝 Conversión a Markdown**: Transformación automática de páginas de Notion a formato Markdown
-- **📁 Descarga Automática**: Guardado directo en carpeta local sin confirmación del navegador
+1. Ejecuta la aplicación:
 
-### 🆕 Nueva Funcionalidad: Conversión Automática a Markdown
+```bash
+npm run dev
+```
 
-La aplicación ahora incluye un **sistema completo de conversión a Markdown** que permite:
+2. Abre tu navegador en `http://localhost:5173`
 
-#### 🎯 Descarga Automática a Carpeta Local
+3. Haz clic en "Procesar Base de Datos"
 
-**¡Sin confirmación del navegador!** Ejecuta el comando y los archivos se guardan automáticamente:
+4. Una vez procesado, haz clic en "📖 Ver Archivos Markdown"
+
+5. **¡Nuevo!** El visualizador te permite:
+   - 📋 Ver el índice con enlaces a todas las páginas
+   - 🔍 Buscar archivos por nombre o título
+   - 📄 Navegar entre páginas con un clic
+   - 🎨 Ver código con syntax highlighting
+   - 🔗 Seguir enlaces internos entre páginas
+
+### Script de Terminal
+
+Para descarga directa a la carpeta `output/markdown/`:
 
 ```bash
 npm run download-markdown
 ```
 
-Este comando:
+Esto creará:
 
-1. **🔍 Consulta** todas las páginas de tu base de datos de Notion
-2. **📄 Procesa** cada página obteniendo su contenido completo
-3. **📝 Convierte** cada página a formato Markdown con metadatos
-4. **💾 Guarda automáticamente** todos los archivos en `output/markdown/`
-5. **📋 Genera un índice** con enlaces a todas las páginas
+- `output/markdown/index.md` - Índice con enlaces a todas las páginas
+- `output/markdown/[titulo-pagina].md` - Una página Markdown por cada página de Notion
 
-#### 📁 Archivos Generados
-
-- **`INDEX.md`**: Índice principal con enlaces a todas las páginas
-- **`pagina-titulo.md`**: Una página Markdown por cada página de Notion
-
-#### 📝 Formato de Archivos Markdown
-
-Cada archivo incluye:
-
-```markdown
----
-title: "Título de la Página"
-notion_id: "abc123..."
-created: "2024-01-15T10:30:00.000Z"
-updated: "2024-01-15T14:45:00.000Z"
-notion_url: "https://www.notion.so/..."
-exported: "2024-01-15T15:00:00.000Z"
----
-
-# Título de la Página
-
-## Metadatos
-
-- **ID de Notion:** `abc123...`
-- **Fecha de creación:** 15/1/2024, 11:30:00
-- **URL en Notion:** [Ver página](https://...)
-
-## Propiedades
-
-### Estado
-
-✅ Sí
-
-### Prioridad
-
-Alta
-
-## Contenido
-
-_Contenido de la página..._
-```
-
-### 🆕 Funcionalidad: Procesamiento Completo de Base de Datos
-
-La aplicación ahora incluye una funcionalidad avanzada que:
-
-1. **📋 Consulta la base de datos** para obtener todas las páginas
-2. **🔄 Procesa cada página individualmente** obteniendo su contenido completo
-3. **📊 Muestra progreso en tiempo real** durante el procesamiento
-4. **💾 Guarda automáticamente** los resultados en un archivo JSON
-5. **🎯 Maneja errores** de forma robusta, continuando con las páginas restantes
-
-#### Características del Procesamiento:
-
-- **⏱️ Indicador de Progreso**: Muestra el estado actual del procesamiento
-- **📈 Resumen Detallado**: Estadísticas de páginas procesadas y errores
-- **🗂️ Vista Organizada**: Separación entre datos de base de datos y páginas completas
-- **💿 Descarga Automática**: El archivo JSON se descarga automáticamente al finalizar
-- **🛡️ Manejo de Errores**: Si una página falla, continúa con las demás
-- **⏳ Control de Rate Limiting**: Pausa de 200ms entre peticiones para no sobrecargar la API
-
-#### Formato del Archivo Exportado:
-
-```json
-{
-  "timestamp": "2024-01-15T10:30:00.000Z",
-  "summary": {
-    "totalPages": 10,
-    "processedPages": 9,
-    "errors": ["Error en página abc123: API timeout"]
-  },
-  "databasePages": [
-    /* páginas de la consulta inicial */
-  ],
-  "fullPages": [
-    /* páginas con contenido completo */
-  ]
-}
-```
-
-## 🏛️ Arquitectura
-
-### Capas Implementadas
-
-- **🎯 Dominio**: Entidades (`Database`, `Page`, `User`) y Casos de Uso
-- **🔌 Puertos**: Interfaces (`INotionRepository`, `IHttpClient`)
-- **🔧 Adaptadores**: Implementaciones (`NotionRepository`, `AxiosHttpClient`)
-- **🏗️ Infraestructura**: Configuración y contenedor DI
-
-### Casos de Uso Disponibles
-
-- `GetDatabaseUseCase`: Obtener información de una base de datos
-- `GetPageUseCase`: Obtener contenido completo de una página
-- `GetUserUseCase`: Obtener información del usuario actual
-- `QueryDatabaseUseCase`: Consultar páginas de una base de datos
-
-## 🛠️ Configuración
-
-### Variables de Entorno
-
-Crea un archivo `.env` con:
-
-```env
-VITE_NOTION_API_KEY=tu_api_key_de_notion
-VITE_NOTION_DATABASE_ID=id_de_tu_base_de_datos
-```
-
-### Configuración Multi-Entorno
-
-La aplicación detecta automáticamente el entorno:
-
-- **Node.js** (tests): URL directa a Notion API
-- **Browser Development**: Proxy de Vite (`/api/notion/v1`)
-- **Browser Production**: URL directa a Notion API
-
-## 🚀 Comandos Disponibles
+### Abrir Índice en Navegador
 
 ```bash
-# Desarrollo
-npm run dev
-
-# Conversión a Markdown (¡NUEVO!)
-npm run download-markdown        # Descarga automática a output/markdown/
-npm run download-markdown:simple # Script simple de ejemplo
-
-# Tests
-npm test
-npm run test:connection
-
-# Construcción
-npm run build
-npm run preview
-
-# Linting
-npm run lint
-
-# Visualizar diagramas de arquitectura
-npm run diagrams
+npm run open-index
 ```
 
-## 🧪 Testing
+## Comandos Disponibles
 
-El proyecto incluye tests unitarios completos:
+- `npm run dev` - Ejecutar en modo desarrollo
+- `npm run build` - Construir para producción
+- `npm run preview` - Vista previa de la build
+- `npm run download-markdown` - Descargar archivos Markdown
+- `npm run open-index` - Abrir index.md en navegador
+- `npm test` - Ejecutar tests
 
-- ✅ **9 suites de tests**
-- ✅ **47 tests** en total
-- ✅ Cobertura de casos de uso
-- ✅ Cobertura de repositorios
-- ✅ Tests de integración
+## Tecnologías
 
-```bash
-npm test                 # Ejecutar todos los tests
-npm run test:connection  # Test de conexión con Notion
-```
+- **React** + **TypeScript** - Frontend
+- **Vite** - Build tool
+- **Tailwind CSS** - Estilos
+- **React Markdown** - Renderizado de Markdown
+- **Highlight.js** - Syntax highlighting
+- **Jest** - Testing
+- **Notion API** - Integración con Notion
 
-## 📁 Estructura del Proyecto
+## Visualizador de Markdown
 
-```
-src/
-├── domain/                    # 🎯 DOMINIO
-│   ├── entities/             # Database, Page, User
-│   └── usecases/             # Casos de uso principales
-├── ports/                    # 🔌 PUERTOS
-│   └── output/               # Interfaces de repositorios y servicios
-├── adapters/                 # 🔧 ADAPTADORES
-│   ├── input/web/           # Componentes React
-│   └── output/infrastructure/ # Implementaciones
-├── infrastructure/          # 🏗️ INFRAESTRUCTURA
-│   └── di/                  # Contenedor de dependencias
-└── shared/                  # 🔄 COMPARTIDO
-    └── types/               # Tipos de Notion
-```
+El nuevo visualizador incluye:
 
-## 🔧 Resolución de Problemas
+### Características del Visualizador
 
-### CORS en Desarrollo
+- **📋 Sidebar navegable**: Lista todos los archivos con búsqueda
+- **🔍 Búsqueda en tiempo real**: Filtra por nombre de archivo o título
+- **📄 Vista previa completa**: Renderiza Markdown con estilos
+- **🎨 Syntax highlighting**: Código resaltado automáticamente
+- **🔗 Enlaces internos**: Navega entre páginas sin salir del visualizador
+- **📱 Responsive**: Funciona en dispositivos móviles
+- **⚡ Carga rápida**: Archivos en memoria, sin necesidad de descargar
 
-El proyecto incluye configuración de proxy en `vite.config.ts` que resuelve automáticamente los problemas de CORS redirigiendo `/api/notion` a `https://api.notion.com`.
+### Navegación
 
-### Rate Limiting
+- Haz clic en cualquier archivo del sidebar para verlo
+- Usa la búsqueda para filtrar archivos
+- Los enlaces internos (a otros archivos .md) abren la página correspondiente
+- Los enlaces externos se abren en nueva pestaña
 
-La aplicación incluye control automático de rate limiting con pausas entre peticiones para evitar sobrecargar la API de Notion.
+## Arquitectura
 
-## 📚 Documentación Adicional
+El proyecto sigue los principios de **Arquitectura Hexagonal** (Ports & Adapters):
 
-- [Diagramas de Arquitectura](diagrams.html) - Visualización de la arquitectura hexagonal
-- [Casos de Uso](src/domain/usecases/) - Lógica de negocio
-- [Tests](src/**/__tests__/) - Ejemplos de uso y casos de prueba
+- **Domain**: Entidades de negocio (`Page`, `Database`, `User`)
+- **Ports**: Interfaces que definen contratos
+- **Adapters**: Implementaciones concretas (Notion API, HTTP, File System)
+- **Use Cases**: Lógica de aplicación
+- **Infrastructure**: Configuración e inyección de dependencias
 
-## 🤝 Contribución
+## Flujo de Conversión
 
-El proyecto sigue principios de Clean Architecture y SOLID. Para contribuir:
+1. **Consulta**: Se obtienen las páginas de la base de datos de Notion
+2. **Procesamiento**: Se obtiene el contenido completo de cada página
+3. **Conversión**: Se convierten las páginas a formato Markdown
+4. **Generación**: Se crea un archivo índice con enlaces
+5. **Visualización**: Se muestran en el visualizador web integrado
+6. **Descarga**: Se guardan los archivos automáticamente (opcional)
 
-1. Mantén la separación de capas
-2. Escribe tests para nuevas funcionalidades
-3. Sigue las convenciones de TypeScript
-4. Actualiza la documentación
+## Formato de Salida
+
+Cada archivo Markdown incluye:
+
+- **Frontmatter** con metadatos (título, ID, fechas, URL)
+- **Título principal** extraído de las propiedades
+- **Sección de metadatos** con información de Notion
+- **Propiedades** procesadas y formateadas
+- **Contenido** (en futuras versiones incluirá bloques)
+
+## Contribuir
+
+1. Fork el proyecto
+2. Crea una rama para tu feature (`git checkout -b feature/AmazingFeature`)
+3. Commit tus cambios (`git commit -m 'Add some AmazingFeature'`)
+4. Push a la rama (`git push origin feature/AmazingFeature`)
+5. Abre un Pull Request
+
+## Licencia
+
+Este proyecto está bajo la Licencia MIT - ver el archivo [LICENSE](LICENSE) para más detalles.

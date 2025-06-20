@@ -153,7 +153,6 @@ async function directMarkdownDownload() {
     }
 
     console.log('\n📝 Archivos Markdown guardados automáticamente en output/markdown/');
-
   } catch (error) {
     console.error('❌ Error en conversión:', error instanceof Error ? error.message : error);
     process.exit(1);
