@@ -70,3 +70,17 @@
   transform: translateY(0);
   box-shadow: 0 2px 8px rgba(100, 108, 255, 0.3);
 }
+
+.test-button {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  box-shadow: 0 2px 8px rgba(16, 185, 129, 0.3);
+}
+
+.test-button:hover {
+  background: linear-gradient(135deg, #059669 0%, #10b981 100%);
+  box-shadow: 0 4px 16px rgba(16, 185, 129, 0.4);
+}
+
+.test-button:active {
+  box-shadow: 0 2px 8px rgba(16, 185, 129, 0.3);
+}

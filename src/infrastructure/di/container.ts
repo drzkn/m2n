@@ -4,6 +4,8 @@ import { GetDatabaseUseCase } from '../../domain/usecases/GetDatabaseUseCase';
 import { GetUserUseCase } from '../../domain/usecases/GetUserUseCase';
 import { QueryDatabaseUseCase } from '../../domain/usecases/QueryDatabaseUseCase';
 import { GetPageUseCase } from '../../domain/usecases/GetPageUseCase';
+import { GetBlockChildrenUseCase } from '../../domain/usecases/GetBlockChildrenUseCase';
+import { GetBlockChildrenRecursiveUseCase } from '../../domain/usecases/GetBlockChildrenRecursiveUseCase';
 
 // Función para obtener variables de entorno compatibles con Vite y Node.js
 const getEnvVar = (key: string): string | undefined => {
@@ -46,6 +48,8 @@ const getDatabaseUseCase = new GetDatabaseUseCase(notionRepository);
 const getUserUseCase = new GetUserUseCase(notionRepository);
 const queryDatabaseUseCase = new QueryDatabaseUseCase(notionRepository);
 const getPageUseCase = new GetPageUseCase(notionRepository);
+const getBlockChildrenUseCase = new GetBlockChildrenUseCase(notionRepository);
+const getBlockChildrenRecursiveUseCase = new GetBlockChildrenRecursiveUseCase(notionRepository);
 
 // Contenedor de dependencias
 export const container = {
@@ -58,6 +62,8 @@ export const container = {
   getUserUseCase,
   queryDatabaseUseCase,
   getPageUseCase,
+  getBlockChildrenUseCase,
+  getBlockChildrenRecursiveUseCase,
 
   // Configuración
   config: {
@@ -70,4 +76,4 @@ export const container = {
 };
 
 // Exportar casos de uso para uso directo
-export { getDatabaseUseCase, getUserUseCase, queryDatabaseUseCase, getPageUseCase }; 
+export { getDatabaseUseCase, getUserUseCase, queryDatabaseUseCase, getPageUseCase, getBlockChildrenUseCase, getBlockChildrenRecursiveUseCase }; 

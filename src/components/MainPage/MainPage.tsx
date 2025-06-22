@@ -31,6 +31,19 @@ export const MainPage: React.FC = () => {
         </button>
       </div>
 
+      <div className="card">
+        <h2>🧪 Notion Repository Tester</h2>
+        <p>
+          Prueba todos los métodos del repositorio de Notion con botones interactivos y ve los resultados JSON
+        </p>
+        <button
+          onClick={() => navigate('/test')}
+          className="primary-button test-button"
+        >
+          🧪 Abrir Tester
+        </button>
+      </div>
+
       <p className="read-the-docs">
         Convierte páginas de Notion a Markdown y visualízalas de forma interactiva
       </p>
