@@ -1,9 +1,10 @@
 import { Database } from "../../../../../domain/entities/Database";
 import { Page } from "../../../../../domain/entities/Page";
 import { User } from "../../../../../domain/entities/User";
+import { Block } from "../../../../../domain/entities/Block";
 import { INotionRepository } from "../../../../../ports/output/repositories/INotionRepository";
 import { IHttpClient } from "../../../../../ports/output/services/IHttpClient";
-import { NotionDatabaseResponse, NotionPageResponse, NotionUserResponse } from "../../../../../shared/types/notion.types";
+import { NotionDatabaseResponse, NotionPageResponse, NotionUserResponse, NotionBlockResponse } from "../../../../../shared/types/notion.types";
 
 interface NotionError {
   response?: {
@@ -75,6 +76,19 @@ export class NotionRepository implements INotionRepository {
       return response.data.results.map(pageData => Page.fromNotionResponse(pageData));
     } catch (error: unknown) {
       console.error('Error al consultar la base de datos:', error);
+      throw error;
+    }
+  }
+
+  async getBlockChildren(blockId: string): Promise<Block[]> {
+    try {
+      const response = await this.httpClient.get<{ results: NotionBlockResponse[] }>(
+        `/blocks/${blockId}/children`
+      );
+
+      return response.data.results.map(blockData => Block.fromNotionResponse(blockData));
+    } catch (error: unknown) {
+      console.error('Error al obtener los bloques hijos:', error);
       throw error;
     }
   }

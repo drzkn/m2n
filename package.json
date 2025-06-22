@@ -16,7 +16,9 @@
     "clean-markdown": "node scripts/cleanMarkdown.cjs",
     "download-markdown": "npx tsx scripts/directMarkdownDownload.ts",
     "download-markdown:old": "npx tsx scripts/notionToMarkdown.ts",
-    "download-markdown:simple": "node scripts/downloadToMarkdown.cjs"
+    "download-markdown:simple": "node scripts/downloadToMarkdown.cjs",
+    "example:get-block-children": "npx tsx src/examples/getBlockChildrenExample.ts",
+    "example:get-block-children:recursive": "npx tsx src/examples/getBlockChildrenRecursiveExample.ts"
   },
   "dependencies": {
     "@notionhq/client": "^2.2.14",
