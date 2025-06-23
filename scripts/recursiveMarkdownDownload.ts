@@ -229,10 +229,9 @@ async function recursiveMarkdownDownload() {
     // Paso 2: Obtener contenido completo de cada página CON bloques recursivos (EN PARALELO)
     console.log('🚀 Obteniendo páginas completas y bloques recursivos en paralelo...');
 
-    const pagePromises = databasePages.map(async (dbPage, index) => {
+    const pagePromises = databasePages.map(async (dbPage) => {
       try {
         const pageTitle = getPageTitle(dbPage);
-        console.log(`📄 Iniciando procesamiento página ${index + 1}/${databasePages.length}: ${pageTitle}`);
 
         // Obtener página completa
         const fullPage = await getPageUseCase.execute(dbPage.id);
@@ -266,7 +265,6 @@ async function recursiveMarkdownDownload() {
     });
 
     // Ejecutar todas las promesas en paralelo
-    console.log('⏳ Esperando que todas las páginas se procesen...');
     const results = await Promise.all(pagePromises);
 
     // Procesar resultados
