@@ -88,6 +88,89 @@ const NotionTestPage: React.FC = () => {
     executeTest('queryDatabase', () => container.queryDatabaseUseCase.execute(testIds.databaseId));
   };
 
+  const testQueryDatabaseWithBlocks = async () => {
+    if (!testIds.databaseId) {
+      alert('Por favor, ingresa un Database ID');
+      return;
+    }
+
+    const startTime = Date.now();
+    setLoading('queryDatabaseWithBlocks');
+
+    try {
+      // Paso 1: Obtener páginas de la base de datos
+      const pages = await container.queryDatabaseUseCase.execute(testIds.databaseId);
+
+      // Paso 2: Obtener bloques recursivos para cada página
+      const pagesWithBlocks = await Promise.all(
+        pages.map(async (page) => {
+          try {
+            const blocks = await container.getBlockChildrenRecursiveUseCase.execute(page.id, {
+              maxDepth: 5,
+              includeEmptyBlocks: false,
+              delayBetweenRequests: 150
+            });
+
+            return {
+              ...page,
+              blocks: blocks.blocks,
+              blocksStats: {
+                totalBlocks: blocks.totalBlocks,
+                maxDepthReached: blocks.maxDepthReached,
+                totalApiCalls: blocks.apiCallsCount
+              }
+            };
+          } catch (error) {
+            console.warn(`Error obteniendo bloques para página ${page.id}:`, error);
+            return {
+              ...page,
+              blocks: [],
+              blocksStats: { totalBlocks: 0, maxDepthReached: 0, totalApiCalls: 0 },
+              blocksError: error instanceof Error ? error.message : 'Error desconocido'
+            };
+          }
+        })
+      );
+
+      const duration = Date.now() - startTime;
+
+      // Estadísticas generales
+      const totalBlocks = pagesWithBlocks.reduce((sum, page) => sum + page.blocksStats.totalBlocks, 0);
+      const totalApiCalls = pagesWithBlocks.reduce((sum, page) => sum + page.blocksStats.totalApiCalls, 0);
+
+      const result = {
+        pages: pagesWithBlocks,
+        summary: {
+          totalPages: pages.length,
+          totalBlocks,
+          totalApiCalls,
+          averageBlocksPerPage: Math.round(totalBlocks / pages.length * 100) / 100,
+          processingTimeMs: duration
+        }
+      };
+
+      addResult({
+        method: 'queryDatabase con bloques recursivos',
+        success: true,
+        data: result,
+        timestamp: new Date().toLocaleString('es-ES'),
+        duration
+      });
+    } catch (error) {
+      const duration = Date.now() - startTime;
+
+      addResult({
+        method: 'queryDatabase con bloques recursivos',
+        success: false,
+        error: error instanceof Error ? error.message : 'Error desconocido',
+        timestamp: new Date().toLocaleString('es-ES'),
+        duration
+      });
+    } finally {
+      setLoading(null);
+    }
+  };
+
   const testGetPage = () => {
     if (!testIds.pageId) {
       alert('Por favor, ingresa un Page ID');
@@ -276,6 +359,14 @@ const NotionTestPage: React.FC = () => {
             className="test-btn database-btn"
           >
             {loading === 'queryDatabase' ? '⏳ Cargando...' : '🔍 queryDatabase()'}
+          </button>
+
+          <button
+            onClick={testQueryDatabaseWithBlocks}
+            disabled={loading === 'queryDatabaseWithBlocks' || !testIds.databaseId}
+            className="test-btn database-btn"
+          >
+            {loading === 'queryDatabaseWithBlocks' ? '⏳ Cargando...' : '🌳 queryDatabase() + bloques recursivos'}
           </button>
         </div>
 
