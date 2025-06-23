@@ -1,4 +1,6 @@
 import { Page } from '../../domain/entities/Page';
+import { Block } from '../../domain/entities/Block';
+import { convertBlocksToMarkdown } from '../../utils/blockToMarkdownConverter';
 // import { BlocksToMarkdownConverter } from '../../utils/notionService/converters/blocksToMarkdown';
 
 export interface MarkdownFile {
@@ -50,10 +52,54 @@ export class MarkdownConverterService {
   }
 
   /**
+   * Convierte una página de Notion con sus bloques de contenido a Markdown
+   */
+  convertPageWithBlocksToMarkdown(page: Page, blocks: Block[]): MarkdownFile {
+    const title = this.extractPageTitle(page);
+    const filename = this.generateFilename(title, page.id);
+
+    // Crear contenido Markdown
+    let content = '';
+
+    // Agregar título principal
+    content += `# ${title}\n\n`;
+
+    // Agregar contenido de la página (propiedades)
+    content += this.generatePagePropertiesContent(page);
+
+    // Agregar contenido de bloques usando la función de utilidades
+    if (blocks && blocks.length > 0) {
+      content += '## Contenido\n\n';
+      content += convertBlocksToMarkdown(blocks);
+    } else {
+      content += '\n*Esta página no tiene contenido de bloques.*\n\n';
+    }
+
+    return {
+      filename,
+      content,
+      metadata: {
+        id: page.id,
+        title,
+        createdTime: page.createdTime,
+        lastEditedTime: page.lastEditedTime,
+        url: page.url
+      }
+    };
+  }
+
+  /**
    * Convierte múltiples páginas a archivos Markdown
    */
   convertPagesToMarkdown(pages: Page[]): MarkdownFile[] {
     return pages.map(page => this.convertPageToMarkdown(page));
+  }
+
+  /**
+   * Convierte múltiples páginas con sus bloques a archivos Markdown
+   */
+  convertPagesWithBlocksToMarkdown(pagesWithBlocks: { page: Page; blocks: Block[] }[]): MarkdownFile[] {
+    return pagesWithBlocks.map(({ page, blocks }) => this.convertPageWithBlocksToMarkdown(page, blocks));
   }
 
   /**
@@ -134,6 +180,13 @@ export class MarkdownConverterService {
   }
 
   private generatePageContent(page: Page): string {
+    return this.generatePagePropertiesContent(page) + '\n## Contenido\n\n*Para incluir el contenido de bloques, usa el método convertPageWithBlocksToMarkdown*\n\n';
+  }
+
+  /**
+   * Genera contenido de las propiedades de la página
+   */
+  private generatePagePropertiesContent(page: Page): string {
     // Por ahora, agregar las propiedades como contenido
     // En el futuro, aquí se procesarían los bloques de contenido
     let content = '## Propiedades\n\n';
@@ -153,9 +206,6 @@ export class MarkdownConverterService {
     } catch {
       content += '*Error al procesar las propiedades de la página*\n\n';
     }
-
-    content += '## Contenido\n\n';
-    content += '*El contenido de bloques se agregará en futuras versiones*\n\n';
 
     return content;
   }

@@ -8,6 +8,7 @@ const createMockNotionRepository = (): jest.Mocked<INotionRepository> => ({
   getPage: jest.fn(),
   getUser: jest.fn(),
   queryDatabase: jest.fn(),
+  getBlockChildren: jest.fn(),
 });
 
 describe('GetDatabaseUseCase', () => {

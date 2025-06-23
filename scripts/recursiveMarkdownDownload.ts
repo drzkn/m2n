@@ -12,6 +12,7 @@ import { GetPageUseCase } from '../src/domain/usecases/GetPageUseCase';
 import { GetBlockChildrenRecursiveUseCase } from '../src/domain/usecases/GetBlockChildrenRecursiveUseCase';
 import { Page } from '../src/domain/entities/Page';
 import { Block } from '../src/domain/entities/Block';
+import { convertBlocksToMarkdown } from '../src/utils/blockToMarkdownConverter';
 
 interface PageWithBlocks {
   id: string;
@@ -54,118 +55,6 @@ const getPageTitle = (page: Page | PageWithBlocks): string => {
   } catch {
     return `Página ${page.id.substring(0, 8)}`;
   }
-};
-
-// Función para convertir bloques a Markdown básico
-const convertBlocksToMarkdown = (blocks: Block[], level = 0): string => {
-  const indent = '  '.repeat(level);
-  let markdown = '';
-
-  for (const block of blocks) {
-    switch (block.type) {
-      case 'paragraph': {
-        const paragraphData = block.data.paragraph as { rich_text?: Array<{ plain_text?: string }> };
-        const text = paragraphData?.rich_text?.map(rt => rt.plain_text).join('') || '';
-        if (text.trim()) {
-          markdown += `${indent}${text}\n\n`;
-        }
-        break;
-      }
-
-      case 'heading_1': {
-        const headingData = block.data.heading_1 as { rich_text?: Array<{ plain_text?: string }> };
-        const text = headingData?.rich_text?.map(rt => rt.plain_text).join('') || '';
-        if (text.trim()) {
-          markdown += `${indent}# ${text}\n\n`;
-        }
-        break;
-      }
-
-      case 'heading_2': {
-        const headingData = block.data.heading_2 as { rich_text?: Array<{ plain_text?: string }> };
-        const text = headingData?.rich_text?.map(rt => rt.plain_text).join('') || '';
-        if (text.trim()) {
-          markdown += `${indent}## ${text}\n\n`;
-        }
-        break;
-      }
-
-      case 'heading_3': {
-        const headingData = block.data.heading_3 as { rich_text?: Array<{ plain_text?: string }> };
-        const text = headingData?.rich_text?.map(rt => rt.plain_text).join('') || '';
-        if (text.trim()) {
-          markdown += `${indent}### ${text}\n\n`;
-        }
-        break;
-      }
-
-      case 'bulleted_list_item': {
-        const listData = block.data.bulleted_list_item as { rich_text?: Array<{ plain_text?: string }> };
-        const text = listData?.rich_text?.map(rt => rt.plain_text).join('') || '';
-        if (text.trim()) {
-          markdown += `${indent}- ${text}\n`;
-        }
-        break;
-      }
-
-      case 'numbered_list_item': {
-        const listData = block.data.numbered_list_item as { rich_text?: Array<{ plain_text?: string }> };
-        const text = listData?.rich_text?.map(rt => rt.plain_text).join('') || '';
-        if (text.trim()) {
-          markdown += `${indent}1. ${text}\n`;
-        }
-        break;
-      }
-
-      case 'divider': {
-        markdown += `${indent}---\n\n`;
-        break;
-      }
-
-      case 'quote': {
-        const quoteData = block.data.quote as { rich_text?: Array<{ plain_text?: string }> };
-        const text = quoteData?.rich_text?.map(rt => rt.plain_text).join('') || '';
-        if (text.trim()) {
-          markdown += `${indent}> ${text}\n\n`;
-        }
-        break;
-      }
-
-      case 'code': {
-        const codeData = block.data.code as {
-          rich_text?: Array<{ plain_text?: string }>;
-          language?: string;
-        };
-        const text = codeData?.rich_text?.map(rt => rt.plain_text).join('') || '';
-        const language = codeData?.language || '';
-        if (text.trim()) {
-          markdown += `${indent}\`\`\`${language}\n${text}\n\`\`\`\n\n`;
-        }
-        break;
-      }
-
-      default: {
-        // Para tipos no manejados, intentar extraer texto básico
-        const blockData = block.data[block.type] as { rich_text?: Array<{ plain_text?: string }> };
-        if (blockData?.rich_text) {
-          const text = blockData.rich_text.map(rt => rt.plain_text).join('') || '';
-          if (text.trim()) {
-            markdown += `${indent}${text} *(${block.type})*\n\n`;
-          }
-        } else {
-          markdown += `${indent}*[${block.type}]*\n\n`;
-        }
-        break;
-      }
-    }
-
-    // Procesar bloques hijos recursivamente
-    if (block.children && block.children.length > 0) {
-      markdown += convertBlocksToMarkdown(block.children, level + 1);
-    }
-  }
-
-  return markdown;
 };
 
 // Función para crear nombre de archivo seguro
