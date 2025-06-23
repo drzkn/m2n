@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { container } from '../../infrastructure/di/container';
 import './NotionTestPage.css';
 
@@ -12,8 +13,10 @@ interface TestResult {
 }
 
 const NotionTestPage: React.FC = () => {
+  const navigate = useNavigate();
   const [results, setResults] = useState<TestResult[]>([]);
   const [loading, setLoading] = useState<string | null>(null);
+  const [successStates, setSuccessStates] = useState<{ [key: string]: boolean }>({});
   const [testIds, setTestIds] = useState({
     databaseId: import.meta.env.VITE_NOTION_DATABASE_ID || '',
     pageId: '',
@@ -26,6 +29,13 @@ const NotionTestPage: React.FC = () => {
 
   const clearResults = () => {
     setResults([]);
+  };
+
+  const showSuccess = (buttonKey: string) => {
+    setSuccessStates(prev => ({ ...prev, [buttonKey]: true }));
+    setTimeout(() => {
+      setSuccessStates(prev => ({ ...prev, [buttonKey]: false }));
+    }, 3000);
   };
 
   const executeTest = async (method: string, testFunction: () => Promise<unknown>) => {
@@ -119,7 +129,7 @@ const NotionTestPage: React.FC = () => {
       const pages = await container.queryDatabaseUseCase.execute(testIds.databaseId);
       if (pages.length > 0) {
         setTestIds(prev => ({ ...prev, pageId: pages[0].id }));
-        alert('Page ID rellenado con la primera página encontrada');
+        showSuccess('autoFillPageId');
       } else {
         alert('No se encontraron páginas en la base de datos');
       }
@@ -141,7 +151,7 @@ const NotionTestPage: React.FC = () => {
       const blocks = await container.getBlockChildrenUseCase.execute(testIds.pageId);
       if (blocks.length > 0) {
         setTestIds(prev => ({ ...prev, blockId: blocks[0].id }));
-        alert('Block ID rellenado con el primer bloque encontrado');
+        showSuccess('autoFillBlockId');
       } else {
         alert('No se encontraron bloques en la página');
       }
@@ -154,9 +164,22 @@ const NotionTestPage: React.FC = () => {
 
   return (
     <div className="notion-test-page">
+      <div className='home-btn-container'>
+        <button
+          onClick={() => navigate('/')}
+          className="home-btn"
+          title="Volver a la página inicial"
+        >
+          🏠 Inicio
+        </button>
+      </div>
       <div className="test-header">
-        <h1>🧪 Notion Repository Tester</h1>
-        <p>Prueba todos los métodos del repositorio de Notion con valores preestablecidos</p>
+        <div className="header-top">
+          <div className="header-title">
+            <h1>🧪 Notion Repository Tester</h1>
+            <p>Prueba todos los métodos del repositorio de Notion con valores preestablecidos</p>
+          </div>
+        </div>
 
         <div className="test-controls">
           <button onClick={clearResults} className="clear-btn">
@@ -169,7 +192,7 @@ const NotionTestPage: React.FC = () => {
       </div>
 
       <div className="test-inputs">
-        <h3>🔧 Configuración de IDs</h3>
+        <h2>🔧 Configuración de IDs</h2>
         <div className="input-group">
           <label>
             Database ID:
@@ -193,10 +216,11 @@ const NotionTestPage: React.FC = () => {
             />
             <button
               onClick={autoFillPageId}
-              className="auto-fill-btn"
+              className={`auto-fill-btn ${successStates.autoFillPageId ? 'success' : ''}`}
               disabled={loading === 'autoFillPageId'}
             >
-              {loading === 'autoFillPageId' ? '⏳' : '🔄'} Auto-rellenar
+              {loading === 'autoFillPageId' ? '⏳' : successStates.autoFillPageId ? '✅' : '🔄'}
+              {loading === 'autoFillPageId' ? ' Cargando...' : successStates.autoFillPageId ? ' ¡Completado!' : ' Auto-rellenar'}
             </button>
           </label>
         </div>
@@ -212,17 +236,18 @@ const NotionTestPage: React.FC = () => {
             />
             <button
               onClick={autoFillBlockId}
-              className="auto-fill-btn"
+              className={`auto-fill-btn ${successStates.autoFillBlockId ? 'success' : ''}`}
               disabled={loading === 'autoFillBlockId'}
             >
-              {loading === 'autoFillBlockId' ? '⏳' : '🔄'} Auto-rellenar
+              {loading === 'autoFillBlockId' ? '⏳' : successStates.autoFillBlockId ? '✅' : '🔄'}
+              {loading === 'autoFillBlockId' ? ' Cargando...' : successStates.autoFillBlockId ? ' ¡Completado!' : ' Auto-rellenar'}
             </button>
           </label>
         </div>
       </div>
 
       <div className="test-buttons">
-        <h3>🚀 Métodos de Prueba</h3>
+        <h2>🚀 Métodos de Prueba</h2>
 
         <div className="button-group">
           <h4>👤 Usuario</h4>
@@ -286,7 +311,7 @@ const NotionTestPage: React.FC = () => {
       </div>
 
       <div className="test-results">
-        <h3>📊 Resultados de las Pruebas</h3>
+        <h2>📊 Resultados de las Pruebas</h2>
 
         {results.length === 0 ? (
           <div className="no-results">
