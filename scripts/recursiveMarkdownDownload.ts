@@ -299,16 +299,6 @@ async function recursiveMarkdownDownload() {
       // Crear contenido Markdown
       let content = `# ${title}\n\n`;
 
-      // Agregar metadatos
-      content += `---\n`;
-      content += `**ID de Página:** ${pageWithBlocks.id}\n`;
-      content += `**Fecha de Creación:** ${pageWithBlocks.createdTime || 'N/A'}\n`;
-      content += `**Última Modificación:** ${pageWithBlocks.lastEditedTime || 'N/A'}\n`;
-      content += `**Bloques Totales:** ${pageWithBlocks.blocksStats.totalBlocks}\n`;
-      content += `**Profundidad Máxima:** ${pageWithBlocks.blocksStats.maxDepthReached}\n`;
-      content += `**Llamadas API:** ${pageWithBlocks.blocksStats.totalApiCalls}\n`;
-      content += `---\n\n`;
-
       // Agregar contenido de bloques
       if (pageWithBlocks.blocks.length > 0) {
         content += `## Contenido\n\n`;
