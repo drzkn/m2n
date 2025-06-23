@@ -238,7 +238,6 @@ async function recursiveMarkdownDownload() {
         const fullPage = await getPageUseCase.execute(dbPage.id);
 
         // Obtener bloques recursivos
-        console.log(`   🌳 Obteniendo bloques recursivos para: ${pageTitle}`);
         const blocksResult = await getBlockChildrenRecursiveUseCase.execute(fullPage.id, {
           maxDepth: 5,
           includeEmptyBlocks: false,
