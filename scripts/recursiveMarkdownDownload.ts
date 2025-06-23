@@ -226,27 +226,23 @@ async function recursiveMarkdownDownload() {
 
     console.log(`✅ Encontradas ${databasePages.length} páginas`);
 
-    // Paso 2: Obtener contenido completo de cada página CON bloques recursivos
-    const pagesWithBlocks: PageWithBlocks[] = [];
-    const errors: string[] = [];
-    let totalBlocks = 0;
-    let totalApiCalls = 0;
+    // Paso 2: Obtener contenido completo de cada página CON bloques recursivos (EN PARALELO)
+    console.log('🚀 Obteniendo páginas completas y bloques recursivos en paralelo...');
 
-    for (let i = 0; i < databasePages.length; i++) {
-      const dbPage = databasePages[i];
+    const pagePromises = databasePages.map(async (dbPage, index) => {
       try {
         const pageTitle = getPageTitle(dbPage);
-        console.log(`📄 Procesando página ${i + 1}/${databasePages.length}: ${pageTitle}`);
+        console.log(`📄 Iniciando procesamiento página ${index + 1}/${databasePages.length}: ${pageTitle}`);
 
         // Obtener página completa
         const fullPage = await getPageUseCase.execute(dbPage.id);
 
         // Obtener bloques recursivos
-        console.log(`   🌳 Obteniendo bloques recursivos...`);
+        console.log(`   🌳 Obteniendo bloques recursivos para: ${pageTitle}`);
         const blocksResult = await getBlockChildrenRecursiveUseCase.execute(fullPage.id, {
           maxDepth: 5,
           includeEmptyBlocks: false,
-          delayBetweenRequests: 150
+          delayBetweenRequests: 100 // Reducido porque ahora procesamos en paralelo
         });
 
         const pageWithBlocks: PageWithBlocks = {
@@ -259,20 +255,36 @@ async function recursiveMarkdownDownload() {
           }
         };
 
-        pagesWithBlocks.push(pageWithBlocks);
-        totalBlocks += blocksResult.totalBlocks;
-        totalApiCalls += blocksResult.apiCallsCount;
+        console.log(`   ✅ ${pageTitle}: ${blocksResult.totalBlocks} bloques obtenidos (profundidad: ${blocksResult.maxDepthReached})`);
 
-        console.log(`   ✅ ${blocksResult.totalBlocks} bloques obtenidos (profundidad: ${blocksResult.maxDepthReached})`);
-
-        // Pausa para no sobrecargar la API
-        await new Promise(resolve => setTimeout(resolve, 300));
+        return { success: true, page: pageWithBlocks, error: null };
       } catch (pageError) {
-        const errorMsg = `Error en página ${dbPage.id}: ${pageError instanceof Error ? pageError.message : 'Error desconocido'}`;
-        errors.push(errorMsg);
+        const pageTitle = getPageTitle(dbPage);
+        const errorMsg = `Error en página ${pageTitle} (${dbPage.id}): ${pageError instanceof Error ? pageError.message : 'Error desconocido'}`;
         console.error(`❌ ${errorMsg}`);
+        return { success: false, page: null, error: errorMsg };
       }
-    }
+    });
+
+    // Ejecutar todas las promesas en paralelo
+    console.log('⏳ Esperando que todas las páginas se procesen...');
+    const results = await Promise.all(pagePromises);
+
+    // Procesar resultados
+    const pagesWithBlocks: PageWithBlocks[] = [];
+    const errors: string[] = [];
+    let totalBlocks = 0;
+    let totalApiCalls = 0;
+
+    results.forEach(result => {
+      if (result.success && result.page) {
+        pagesWithBlocks.push(result.page);
+        totalBlocks += result.page.blocksStats.totalBlocks;
+        totalApiCalls += result.page.blocksStats.totalApiCalls;
+      } else if (result.error) {
+        errors.push(result.error);
+      }
+    });
 
     console.log(`✅ Procesadas ${pagesWithBlocks.length}/${databasePages.length} páginas`);
     console.log(`📊 Total de bloques obtenidos: ${totalBlocks}`);
