@@ -4,7 +4,7 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "yarn clean-markdown && yarn download-markdown && vite",
+    "dev": "yarn clean-markdown && yarn download-markdown:recursive && vite",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview",
@@ -15,6 +15,8 @@
     "test:connection:watch": "nodemon --watch src/examples/config.examples.ts --watch src/services --ext ts --exec 'npm run test:connection'",
     "clean-markdown": "node scripts/cleanMarkdown.cjs",
     "download-markdown": "npx tsx scripts/directMarkdownDownload.ts",
+    "download-markdown:recursive": "npx tsx scripts/recursiveMarkdownDownload.ts",
+    "download-markdown:full": "yarn clean-markdown && yarn download-markdown:recursive",
     "download-markdown:old": "npx tsx scripts/notionToMarkdown.ts",
     "download-markdown:simple": "node scripts/downloadToMarkdown.cjs",
     "example:get-block-children": "npx tsx src/examples/getBlockChildrenExample.ts",

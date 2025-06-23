@@ -67,7 +67,9 @@ npm run dev
    - 🎨 Ver código con syntax highlighting
    - 🔗 Seguir enlaces internos entre páginas
 
-### Script de Terminal
+### Scripts de Terminal
+
+#### Descarga Básica
 
 Para descarga directa a la carpeta `output/markdown/`:
 
@@ -75,10 +77,37 @@ Para descarga directa a la carpeta `output/markdown/`:
 npm run download-markdown
 ```
 
-Esto creará:
+#### Descarga Recursiva (Recomendado)
 
-- `output/markdown/index.md` - Índice con enlaces a todas las páginas
-- `output/markdown/[titulo-pagina].md` - Una página Markdown por cada página de Notion
+Para descarga con **obtención recursiva de bloques** a la carpeta `output/markdown/`:
+
+```bash
+npm run download-markdown:recursive
+```
+
+**¡Nuevo!** Esta versión incluye:
+
+- 🌳 **Obtención recursiva**: Obtiene todos los bloques hijos de cada página
+- 📊 **Estadísticas detalladas**: Información sobre bloques, profundidad, y llamadas API
+- 📝 **Contenido completo**: Convierte bloques a Markdown (párrafos, títulos, listas, código, etc.)
+- 🔍 **Metadatos enriquecidos**: Incluye estadísticas de procesamiento
+- ⚡ **Optimizado**: Control de velocidad para evitar rate limits
+
+#### Archivos Generados
+
+Ambos scripts generan archivos en `output/markdown/`:
+
+**Descarga básica:**
+
+- `index.md` - Índice con enlaces a todas las páginas
+- `[titulo-pagina].md` - Metadatos de cada página
+
+**Descarga recursiva:**
+
+- `index.md` - Índice con estadísticas completas
+- `[titulo-pagina].md` - Contenido completo con todos los bloques convertidos a Markdown
+
+> 💡 **Nota:** El script recursivo sobrescribirá los archivos de la descarga básica, proporcionando archivos más completos.
 
 ### Abrir Índice en Navegador
 
@@ -91,7 +120,8 @@ npm run open-index
 - `npm run dev` - Ejecutar en modo desarrollo
 - `npm run build` - Construir para producción
 - `npm run preview` - Vista previa de la build
-- `npm run download-markdown` - Descargar archivos Markdown
+- `npm run download-markdown` - Descargar archivos Markdown (básico)
+- `npm run download-markdown:recursive` - Descargar con contenido recursivo (recomendado)
 - `npm run open-index` - Abrir index.md en navegador
 - `npm test` - Ejecutar tests
 
