@@ -35,6 +35,9 @@ export class MarkdownConverterService {
     // Agregar título principal
     content += `# ${title}\n\n`;
 
+    // Agregar sección de metadatos
+    content += this.generateMetadataSection(page);
+
     // Agregar contenido de la página (si tiene bloques)
     content += this.generatePageContent(page);
 
@@ -63,6 +66,9 @@ export class MarkdownConverterService {
 
     // Agregar título principal
     content += `# ${title}\n\n`;
+
+    // Agregar sección de metadatos
+    content += this.generateMetadataSection(page);
 
     // Agregar contenido de la página (propiedades)
     content += this.generatePagePropertiesContent(page);
@@ -181,6 +187,24 @@ export class MarkdownConverterService {
 
   private generatePageContent(page: Page): string {
     return this.generatePagePropertiesContent(page) + '\n## Contenido\n\n*Para incluir el contenido de bloques, usa el método convertPageWithBlocksToMarkdown*\n\n';
+  }
+
+  /**
+   * Genera la sección de metadatos de la página
+   */
+  private generateMetadataSection(page: Page): string {
+    let content = '---\n';
+    content += '## 📋 Metadatos\n\n';
+
+    content += `**ID de la página:** \`${page.id}\`\n\n`;
+
+    if (page.url) {
+      content += `**URL:** [Ver en Notion](${page.url})\n\n`;
+    }
+
+    content += '---\n\n';
+
+    return content;
   }
 
   /**

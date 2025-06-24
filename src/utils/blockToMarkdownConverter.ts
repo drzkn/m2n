@@ -40,6 +40,7 @@ const blockConverters: Record<string, BlockConverter> = {
   'divider': (_, indent) => `${indent}---\n\n`,
   'quote': convertQuoteBlockToMarkdown,
   'code': convertCodeBlockToMarkdown,
+  'toggle': convertToggleBlockToMarkdown,
 };
 
 /**
@@ -68,7 +69,21 @@ export function convertBlocksToMarkdown(
 
     // Procesar bloques hijos recursivamente
     if (block.children && block.children.length > 0) {
-      markdown += convertBlocksToMarkdown(block.children, level + 1, options);
+      if (isToggleElement(block)) {
+        // Para toggle elements, añadir contenido anidado y cerrar el details
+        const indent = ' '.repeat(indentSpaces).repeat(level);
+        markdown += convertBlocksToMarkdown(block.children, level + 1, options);
+        markdown += `${indent}</details>\n\n`;
+      } else {
+        // Para otros bloques con hijos, procesar normalmente
+        markdown += convertBlocksToMarkdown(block.children, level + 1, options);
+      }
+    } else {
+      // Si es un toggle sin hijos, cerrar el details de inmediato
+      if (isToggleElement(block)) {
+        const indent = ' '.repeat(indentSpaces).repeat(level);
+        markdown += `${indent}</details>\n\n`;
+      }
     }
   }
 
@@ -196,10 +211,12 @@ function convertParagraphBlockToMarkdown(block: Block, indent: string = ''): str
 
 /**
  * Convierte un bloque de encabezado a Markdown
+ * Maneja tanto encabezados normales como toggle headings
  */
 function convertHeadingBlockToMarkdown(block: Block, level: number, indent: string = ''): string {
   const headingData = block.data[block.type] as {
-    rich_text?: Array<NotionRichText>
+    rich_text?: Array<NotionRichText>;
+    is_toggleable?: boolean;
   };
 
   if (!headingData?.rich_text) {
@@ -213,6 +230,13 @@ function convertHeadingBlockToMarkdown(block: Block, level: number, indent: stri
   }
 
   const headingPrefix = '#'.repeat(level);
+
+  // Si es un toggle heading, usar formato HTML details
+  if (headingData.is_toggleable) {
+    return `${indent}<details>\n${indent}<summary><strong>${headingPrefix} ${text}</strong></summary>\n\n`;
+  }
+
+  // Encabezado normal
   return `${indent}${headingPrefix} ${text}\n\n`;
 }
 
@@ -326,6 +350,28 @@ function convertCodeBlockToMarkdown(block: Block, indent: string = ''): string {
 }
 
 /**
+ * Convierte un bloque de toggle a Markdown usando HTML details
+ */
+function convertToggleBlockToMarkdown(block: Block, indent: string = ''): string {
+  const toggleData = block.data.toggle as {
+    rich_text?: Array<NotionRichText>;
+  };
+
+  if (!toggleData?.rich_text) {
+    return '';
+  }
+
+  const text = extractPlainTextFromRichText(toggleData.rich_text);
+
+  if (!text) {
+    return '';
+  }
+
+  // Usar HTML details/summary para toggle blocks
+  return `${indent}<details>\n${indent}<summary>${text}</summary>\n\n`;
+}
+
+/**
  * Convierte un bloque no soportado a Markdown con comentarios informativos
  */
 function convertUnsupportedBlockToMarkdown(
@@ -372,6 +418,21 @@ export function extractPlainTextFromRichText(
     .map(item => item.plain_text || item.text?.content || '')
     .join('')
     .trim();
+}
+
+/**
+ * Verifica si un bloque es un toggle heading (encabezado desplegable)
+ */
+function isToggleHeading(block: Block): boolean {
+  return block.type.startsWith('heading_') &&
+    (block.data[block.type] as { is_toggleable?: boolean })?.is_toggleable === true;
+}
+
+/**
+ * Verifica si un bloque es un toggle block o toggle heading
+ */
+function isToggleElement(block: Block): boolean {
+  return block.type === 'toggle' || isToggleHeading(block);
 }
 
 /**

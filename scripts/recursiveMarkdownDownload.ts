@@ -57,6 +57,40 @@ const getPageTitle = (page: Page | PageWithBlocks): string => {
   }
 };
 
+// Función helper para generar la sección de metadatos
+const generateMetadataSection = (page: Page | PageWithBlocks): string => {
+  let content = '---\n';
+  content += '## 📋 Metadatos\n\n';
+
+  content += `**ID de la página:** \`${page.id}\`\n\n`;
+
+  if (page.url) {
+    content += `**URL:** [Ver en Notion](${page.url})\n\n`;
+  }
+
+  if (page.createdTime) {
+    const createdDate = new Date(page.createdTime).toLocaleString('es-ES');
+    content += `**Fecha de creación:** ${createdDate}\n\n`;
+  }
+
+  if (page.lastEditedTime) {
+    const editedDate = new Date(page.lastEditedTime).toLocaleString('es-ES');
+    content += `**Última modificación:** ${editedDate}\n\n`;
+  }
+
+  // Si es una PageWithBlocks, añadir estadísticas de bloques
+  if ('blocksStats' in page) {
+    content += `**Estadísticas de bloques:**\n`;
+    content += `- Total de bloques: ${page.blocksStats.totalBlocks}\n`;
+    content += `- Profundidad máxima: ${page.blocksStats.maxDepthReached}\n`;
+    content += `- Llamadas API: ${page.blocksStats.totalApiCalls}\n\n`;
+  }
+
+  content += '---\n\n';
+
+  return content;
+};
+
 // Función para crear nombre de archivo seguro
 const createSafeFilename = (title: string): string => {
   return title
@@ -187,6 +221,9 @@ async function recursiveMarkdownDownload() {
 
       // Crear contenido Markdown
       let content = `# ${title}\n\n`;
+
+      // Agregar sección de metadatos
+      content += generateMetadataSection(pageWithBlocks);
 
       // Agregar contenido de bloques
       if (pageWithBlocks.blocks.length > 0) {
