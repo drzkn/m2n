@@ -1,5 +1,5 @@
 import notionLogo from '../../assets/notion.svg'
-import markdownLogo from '../../assets/markdown.svg';
+import supabaseLogo from '../../assets/supabase.svg';
 import './MainPage.css'
 import { useNavigate } from 'react-router-dom';
 
@@ -12,8 +12,8 @@ export const MainPage: React.FC = () => {
         <a href="https://notion.so" target="_blank">
           <img src={notionLogo} className="logo notion" alt="Notion Logo" />
         </a>
-        <a href="https://docs.github.com/es/get-started/writing-on-github/getting-started-with-writing-and-formatting-on-github/basic-writing-and-formatting-syntax" target="_blank">
-          <img src={markdownLogo} className="logo markdown" alt="Markdown Logo" />
+        <a href="https://supabase.com/" target="_blank">
+          <img src={supabaseLogo} className="logo supabase" alt="Markdown Logo" />
         </a>
       </div>
       <h1>Notion 2 Markdown</h1>
@@ -38,9 +38,22 @@ export const MainPage: React.FC = () => {
         </p>
         <button
           onClick={() => navigate('/test')}
-          className="primary-button test-button"
+          className="primary-button"
         >
           🧪 Abrir Tester
+        </button>
+      </div>
+
+      <div className='card'>
+        <h2>🔌 Sincronizar markdown y supabase</h2>
+        <p>
+          Obtención de los bloques de notion de manera recursiva para actualizarlos en supabase
+        </p>
+        <button
+          className="primary-button"
+          onClick={() => { console.log('Vamos a sincronizar en supabase') }}
+        >
+          🔬 Sincronizar
         </button>
       </div>
 

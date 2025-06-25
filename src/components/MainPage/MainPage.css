@@ -20,8 +20,8 @@
 .logo.react:hover {
   filter: drop-shadow(0 0 2em #61dafbaa);
 }
-.logo.markdown:hover {
-  filter: drop-shadow(0 0 2em #9ba2a4aa);
+.logo.supabase:hover {
+  filter: drop-shadow(0 0 2em #10b981);
 }
 
 @keyframes logo-spin {
