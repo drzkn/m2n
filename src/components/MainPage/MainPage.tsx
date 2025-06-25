@@ -2,9 +2,16 @@ import notionLogo from '../../assets/notion.svg'
 import supabaseLogo from '../../assets/supabase.svg';
 import './MainPage.css'
 import { useNavigate } from 'react-router-dom';
+import { useState } from 'react';
+import { MainPageRepository } from './MainPage.repository';
 
 export const MainPage: React.FC = () => {
+  const databaseId = import.meta.env.VITE_NOTION_DATABASE_ID || '';
   const navigate = useNavigate();
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [progress, setProgress] = useState<{ current: number; total: number; currentPageTitle: string } | null>(null);
+
+  const mainPageRepository = new MainPageRepository(databaseId, setIsProcessing, setProgress);
 
   return (
     <div className="main-page">
@@ -50,11 +57,38 @@ export const MainPage: React.FC = () => {
           Obtención de los bloques de notion de manera recursiva para actualizarlos en supabase
         </p>
         <button
-          className="primary-button"
-          onClick={() => { console.log('Vamos a sincronizar en supabase') }}
+          className={`primary-button ${isProcessing ? 'processing' : ''}`}
+          onClick={async () => { await mainPageRepository.handleSyncToMarkdown() }}
+          disabled={isProcessing || !databaseId.trim()}
         >
-          🔬 Sincronizar
+          {isProcessing ? (
+            progress ? (
+              `⏳ Procesando... (${progress.current}/${progress.total})`
+            ) : (
+              '⏳ Iniciando...'
+            )
+          ) : (
+            '🔬 Sincronizar a Markdown'
+          )}
         </button>
+
+        {isProcessing && progress && (
+          <div className="progress-container">
+            <div className="progress-bar">
+              <div
+                className="progress-fill"
+                style={{
+                  width: `${(progress.current / progress.total) * 100}%`
+                }}
+              />
+            </div>
+            <div className="progress-text">
+              📄 {progress.currentPageTitle.length > 50
+                ? progress.currentPageTitle.substring(0, 50) + '...'
+                : progress.currentPageTitle}
+            </div>
+          </div>
+        )}
       </div>
 
       <p className="read-the-docs">

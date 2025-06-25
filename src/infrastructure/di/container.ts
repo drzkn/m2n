@@ -78,6 +78,9 @@ export const container = {
   getBlockChildrenUseCase,
   getBlockChildrenRecursiveUseCase,
 
+  // Servicios
+  markdownConverterService,
+
   // Configuración
   config: {
     isNode,
