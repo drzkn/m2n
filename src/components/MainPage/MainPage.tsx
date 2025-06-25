@@ -56,21 +56,40 @@ export const MainPage: React.FC = () => {
         <p>
           Obtención de los bloques de notion de manera recursiva para actualizarlos en supabase
         </p>
-        <button
-          className={`primary-button ${isProcessing ? 'processing' : ''}`}
-          onClick={async () => { await mainPageRepository.handleSyncToMarkdown() }}
-          disabled={isProcessing || !databaseId.trim()}
-        >
-          {isProcessing ? (
-            progress ? (
-              `⏳ Procesando... (${progress.current}/${progress.total})`
+
+        <div style={{ display: 'flex', gap: '1rem', flexDirection: 'column' }}>
+          {/* <button
+            className={`primary-button ${isProcessing ? 'processing' : ''}`}
+            onClick={async () => { await mainPageRepository.handleSyncToMarkdown() }}
+            disabled={isProcessing || !databaseId.trim()}
+          >
+            {isProcessing ? (
+              progress ? (
+                `⏳ Procesando... (${progress.current}/${progress.total})`
+              ) : (
+                '⏳ Iniciando...'
+              )
             ) : (
-              '⏳ Iniciando...'
-            )
-          ) : (
-            '🔬 Sincronizar a supabase'
-          )}
-        </button>
+              '🔬 Convertir a Markdown (Consola)'
+            )}
+          </button> */}
+
+          <button
+            className={`primary-button test-button ${isProcessing ? 'processing' : ''}`}
+            onClick={async () => { await mainPageRepository.handleSyncToSupabase() }}
+            disabled={isProcessing || !databaseId.trim()}
+          >
+            {isProcessing ? (
+              progress ? (
+                `⏳ Guardando... (${progress.current}/${progress.total})`
+              ) : (
+                '⏳ Iniciando...'
+              )
+            ) : (
+              '💾 Sincronizar con Supabase'
+            )}
+          </button>
+        </div>
 
         {isProcessing && progress && (
           <div className="progress-container">

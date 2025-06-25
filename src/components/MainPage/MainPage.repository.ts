@@ -1,25 +1,23 @@
-import { Page } from "../../domain/entities/Page";
-import { container } from "../../infrastructure/di/container";
+import { container } from '../../infrastructure/di/container';
+import { Page } from '../../domain/entities/Page';
+import { MarkdownPageInsert } from '../../adapters/output/infrastructure/supabase/types';
+
+export interface MarkdownFileResult {
+  pageId: string;
+  title: string;
+  markdown: string;
+  blocksCount: number;
+  stats: { totalBlocks: number; maxDepth: number; apiCalls: number };
+}
 
 export class MainPageRepository {
-  private databaseId: string;
-  private handleProcessing: React.Dispatch<React.SetStateAction<boolean>>;
-  private handleProgress: React.Dispatch<React.SetStateAction<{
-    current: number;
-    total: number;
-    currentPageTitle: string;
-  } | null>>;
+  constructor(
+    private databaseId: string,
+    private setIsProcessing: (processing: boolean) => void,
+    private setProgress: (progress: { current: number; total: number; currentPageTitle: string } | null) => void
+  ) { }
 
-  constructor(databaseId: string, handleProcessing: React.Dispatch<React.SetStateAction<boolean>>, handleProgress: React.Dispatch<React.SetStateAction<{
-    current: number;
-    total: number;
-    currentPageTitle: string;
-  } | null>>,) {
-    this.databaseId = databaseId;
-    this.handleProgress = handleProgress
-    this.handleProcessing = handleProcessing;
-  }
-
+  // Función para logs con emojis y timestamp
   private log(level: 'info' | 'success' | 'warn' | 'error', message: string, data?: unknown) {
     const timestamp = new Date().toISOString();
     const logMessage = `[${timestamp}] [MARKDOWN-${level.toUpperCase()}] ${message}`;
@@ -38,8 +36,9 @@ export class MainPageRepository {
         console.error(`❌ ${logMessage}`, data || '');
         break;
     }
-  };
+  }
 
+  // Función auxiliar para extraer título de página
   private extractPageTitle(page: unknown): string {
     try {
       const pageObj = page as { properties?: Record<string, unknown>; id?: string };
@@ -55,6 +54,7 @@ export class MainPageRepository {
         }
       }
 
+      // Buscar en otras propiedades que podrían ser el título
       if (properties) {
         for (const [, value] of Object.entries(properties)) {
           if (typeof value === 'object' && value !== null) {
@@ -74,14 +74,16 @@ export class MainPageRepository {
       const pageObj = page as { id?: string };
       return `Página ${pageObj.id?.slice(0, 8) || 'unknown'}...`;
     }
-  };
+  }
 
-  async handleSyncToMarkdown() {
-    this.handleProcessing(true);
-    this.handleProgress(null);
+  // Función para convertir bloques a markdown y mostrar en consola
+  async handleSyncToMarkdown(): Promise<void> {
+    this.setIsProcessing(true);
+    this.setProgress(null);
     this.log('info', `🚀 Iniciando conversión a markdown para base de datos: ${this.databaseId}`);
 
     try {
+      // Paso 1: Obtener todas las páginas de la base de datos
       this.log('info', '📊 Obteniendo páginas de la base de datos...');
       const pages = await container.queryDatabaseUseCase.execute(this.databaseId);
       this.log('success', `📄 Encontradas ${pages.length} páginas en la base de datos`);
@@ -91,22 +93,17 @@ export class MainPageRepository {
         return;
       }
 
-      const markdownFiles: Array<{
-        pageId: string;
-        title: string;
-        markdown: string;
-        blocksCount: number;
-        stats: { totalBlocks: number; maxDepth: number; apiCalls: number }
-      }> = [];
-
+      // Paso 2: Procesar cada página en paralelo
+      const markdownFiles: MarkdownFileResult[] = [];
       this.log('info', `🚀 Procesando ${pages.length} páginas en paralelo...`);
 
       let completedPages = 0;
-      const processPage = async (page: unknown, index: number) => {
+      const processPage = async (page: unknown, index: number): Promise<MarkdownFileResult | null> => {
         const pageTitle = this.extractPageTitle(page);
         this.log('info', `📃 [${index + 1}/${pages.length}] Iniciando procesamiento de: ${pageTitle}`);
 
         try {
+          // Obtener bloques recursivos
           this.log('info', `🌳 Obteniendo bloques recursivos para: ${(page as { id: string }).id}`);
           const blocksResult = await container.getBlockChildrenRecursiveUseCase.execute((page as { id: string }).id, {
             maxDepth: 5,
@@ -116,10 +113,11 @@ export class MainPageRepository {
 
           this.log('success', `🧱 [${pageTitle}] Obtenidos ${blocksResult.totalBlocks} bloques (profundidad máxima: ${blocksResult.maxDepthReached}, ${blocksResult.apiCallsCount} llamadas API)`);
 
+          // Convertir página y bloques a markdown
           this.log('info', `📝 [${pageTitle}] Convirtiendo a markdown...`);
           const markdownContent = container.markdownConverterService.convertPageWithBlocksToMarkdown(page as Page, blocksResult.blocks);
 
-          const markdownFile = {
+          const markdownFile: MarkdownFileResult = {
             pageId: (page as { id: string }).id,
             title: pageTitle,
             markdown: typeof markdownContent === 'string' ? markdownContent : markdownContent.content,
@@ -131,8 +129,9 @@ export class MainPageRepository {
             }
           };
 
+          // Actualizar progreso de manera thread-safe
           completedPages++;
-          this.handleProgress({
+          this.setProgress({
             current: completedPages,
             total: pages.length,
             currentPageTitle: `Completadas: ${completedPages}/${pages.length}`
@@ -143,7 +142,7 @@ export class MainPageRepository {
 
         } catch (error) {
           completedPages++;
-          this.handleProgress({
+          this.setProgress({
             current: completedPages,
             total: pages.length,
             currentPageTitle: `Completadas: ${completedPages}/${pages.length} (con errores)`
@@ -154,13 +153,16 @@ export class MainPageRepository {
         }
       };
 
+      // Ejecutar todas las páginas en paralelo
       const results = await Promise.all(
         pages.map((page, index) => processPage(page, index))
       );
 
+      // Filtrar resultados exitosos
       const successfulResults = results.filter((result): result is NonNullable<typeof result> => result !== null);
       markdownFiles.push(...successfulResults);
 
+      // Paso 3: Mostrar todos los archivos markdown en consola
       this.log('info', '📋 Mostrando archivos markdown generados:');
       console.log('\n🎉 ===== ARCHIVOS MARKDOWN GENERADOS ===== 🎉\n');
 
@@ -175,12 +177,13 @@ export class MainPageRepository {
         console.log(`\n📄 =============== FIN ARCHIVO ${index + 1} ===============\n`);
       });
 
+      // Resumen final
       const totalBlocks = markdownFiles.reduce((sum, file) => sum + file.blocksCount, 0);
       const totalApiCalls = markdownFiles.reduce((sum, file) => sum + file.stats.apiCalls, 0);
 
       this.log('success', `🎉 Conversión completada: ${markdownFiles.length} archivos, ${totalBlocks} bloques totales, ${totalApiCalls} llamadas API`);
 
-      console.log(`🎉 ¡Conversión completada!\n\n` +
+      alert(`🎉 ¡Conversión completada!\n\n` +
         `📄 ${markdownFiles.length} páginas procesadas\n` +
         `🧱 ${totalBlocks} bloques convertidos\n` +
         `⚡ ${totalApiCalls} llamadas a la API\n\n` +
@@ -190,8 +193,123 @@ export class MainPageRepository {
       this.log('error', `💥 Error crítico: ${error instanceof Error ? error.message : 'Error desconocido'}`, error);
       alert(`❌ Error en la conversión: ${error instanceof Error ? error.message : 'Error desconocido'}`);
     } finally {
-      this.handleProcessing(false);
-      this.handleProgress(null);
+      this.setIsProcessing(false);
+      this.setProgress(null);
     }
-  };
+  }
+
+  // Nueva función para guardar en Supabase
+  async handleSyncToSupabase(): Promise<void> {
+    this.setIsProcessing(true);
+    this.setProgress(null);
+    this.log('info', `🚀 Iniciando sincronización con Supabase para base de datos: ${this.databaseId}`);
+
+    try {
+      // Paso 1: Obtener todas las páginas de la base de datos
+      this.log('info', '📊 Obteniendo páginas de la base de datos...');
+      const pages = await container.queryDatabaseUseCase.execute(this.databaseId);
+      this.log('success', `📄 Encontradas ${pages.length} páginas en la base de datos`);
+
+      if (pages.length === 0) {
+        this.log('warn', 'No se encontraron páginas en la base de datos');
+        return;
+      }
+
+      // Paso 2: Procesar y guardar cada página en paralelo
+      this.log('info', `🚀 Procesando y guardando ${pages.length} páginas en Supabase...`);
+
+      let completedPages = 0;
+      let savedPages = 0;
+      let errorPages = 0;
+
+      const processAndSavePage = async (page: unknown, index: number): Promise<boolean> => {
+        const pageTitle = this.extractPageTitle(page);
+        this.log('info', `📃 [${index + 1}/${pages.length}] Procesando: ${pageTitle}`);
+
+        try {
+          // Obtener bloques recursivos
+          const blocksResult = await container.getBlockChildrenRecursiveUseCase.execute((page as { id: string }).id, {
+            maxDepth: 20,
+            includeEmptyBlocks: false,
+            delayBetweenRequests: 150
+          });
+
+          // Convertir página y bloques a markdown
+          const markdownContent = container.markdownConverterService.convertPageWithBlocksToMarkdown(page as Page, blocksResult.blocks);
+          const markdownText = typeof markdownContent === 'string' ? markdownContent : markdownContent.content;
+
+          // Preparar datos para Supabase
+          const pageData = page as {
+            id: string;
+            url?: string;
+            created_time?: string;
+            last_edited_time?: string;
+          };
+
+          const supabaseData: MarkdownPageInsert = {
+            notion_page_id: pageData.id,
+            title: pageTitle,
+            content: markdownText,
+            notion_url: pageData.url || null,
+            notion_created_time: pageData.created_time || null,
+            notion_last_edited_time: pageData.last_edited_time || null,
+            metadata: {
+              blocks_count: blocksResult.totalBlocks,
+              max_depth: blocksResult.maxDepthReached,
+              api_calls: blocksResult.apiCallsCount,
+              processed_at: new Date().toISOString()
+            }
+          };
+
+          // Guardar o actualizar en Supabase usando upsert
+          await container.supabaseMarkdownRepository.upsert(supabaseData);
+
+          // Actualizar progreso
+          completedPages++;
+          savedPages++;
+          this.setProgress({
+            current: completedPages,
+            total: pages.length,
+            currentPageTitle: `💾 Guardada: ${pageTitle}`
+          });
+
+          this.log('success', `✅ [${completedPages}/${pages.length}] "${pageTitle}" guardada en Supabase (${blocksResult.totalBlocks} bloques)`);
+          return true;
+
+        } catch (error) {
+          completedPages++;
+          errorPages++;
+          this.setProgress({
+            current: completedPages,
+            total: pages.length,
+            currentPageTitle: `❌ Error: ${pageTitle}`
+          });
+
+          this.log('error', `❌ Error procesando/guardando "${pageTitle}": ${error instanceof Error ? error.message : 'Error desconocido'}`, error);
+          return false;
+        }
+      };
+
+      // Ejecutar todas las páginas en paralelo
+      await Promise.all(
+        pages.map((page, index) => processAndSavePage(page, index))
+      );
+
+      // Resumen final
+      this.log('success', `🎉 Sincronización completada: ${savedPages} páginas guardadas, ${errorPages} errores`);
+
+      alert(`🎉 ¡Sincronización con Supabase completada!\n\n` +
+        `💾 ${savedPages} páginas guardadas exitosamente\n` +
+        `❌ ${errorPages} páginas con errores\n` +
+        `📊 Total procesado: ${completedPages}/${pages.length}\n\n` +
+        `🗄️ Los archivos markdown están ahora disponibles en tu base de datos de Supabase.`);
+
+    } catch (error) {
+      this.log('error', `💥 Error crítico: ${error instanceof Error ? error.message : 'Error desconocido'}`, error);
+      alert(`❌ Error en la sincronización: ${error instanceof Error ? error.message : 'Error desconocido'}`);
+    } finally {
+      this.setIsProcessing(false);
+      this.setProgress(null);
+    }
+  }
 }
