@@ -68,7 +68,7 @@ export const MainPage: React.FC = () => {
               '⏳ Iniciando...'
             )
           ) : (
-            '🔬 Sincronizar a Markdown'
+            '🔬 Sincronizar a supabase'
           )}
         </button>
 
