@@ -20,10 +20,16 @@
     "download-markdown:old": "npx tsx scripts/notionToMarkdown.ts",
     "download-markdown:simple": "node scripts/downloadToMarkdown.cjs",
     "example:get-block-children": "npx tsx src/examples/getBlockChildrenExample.ts",
-    "example:get-block-children:recursive": "npx tsx src/examples/getBlockChildrenRecursiveExample.ts"
+    "example:get-block-children:recursive": "npx tsx src/examples/getBlockChildrenRecursiveExample.ts",
+    "example:supabase": "npx tsx src/examples/supabaseExample.ts",
+    "supabase:start": "npx supabase start",
+    "supabase:stop": "npx supabase stop",
+    "supabase:push": "npx supabase db push",
+    "supabase:reset": "npx supabase db reset"
   },
   "dependencies": {
     "@notionhq/client": "^2.2.14",
+    "@supabase/supabase-js": "^2.50.1",
     "axios": "^1.9.0",
     "dotenv": "^16.5.0",
     "express": "^5.1.0",

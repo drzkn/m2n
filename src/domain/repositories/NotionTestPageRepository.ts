@@ -1,4 +1,4 @@
-import { TestResult } from './NotionTestPage.types';
+import { TestResult } from '../../pages/NotionTestPage/NotionTestPage.types';
 import { container } from '../../infrastructure/di/container';
 
 export class NotionTestPageRepository {

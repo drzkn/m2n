@@ -2,10 +2,15 @@
 .env
 .env.local
 .env.*.local
+.env.keys
 *hex_architecture*
 .cursor
 
 /output
+
+# Supabase
+.branches
+.temp
 
 # Directorios de dependencias
 node_modules/

@@ -6,6 +6,9 @@ import { QueryDatabaseUseCase } from '../../domain/usecases/QueryDatabaseUseCase
 import { GetPageUseCase } from '../../domain/usecases/GetPageUseCase';
 import { GetBlockChildrenUseCase } from '../../domain/usecases/GetBlockChildrenUseCase';
 import { GetBlockChildrenRecursiveUseCase } from '../../domain/usecases/GetBlockChildrenRecursiveUseCase';
+import { SupabaseMarkdownRepository } from '../../adapters/output/infrastructure/supabase';
+import { SupabaseMarkdownService } from '../../services/markdownConverter/SupabaseMarkdownService';
+import { MarkdownConverterService } from '../../services/markdownConverter/MarkdownConverterService';
 
 // Función para obtener variables de entorno compatibles con Vite y Node.js
 const getEnvVar = (key: string): string | undefined => {
@@ -51,6 +54,16 @@ const getPageUseCase = new GetPageUseCase(notionRepository);
 const getBlockChildrenUseCase = new GetBlockChildrenUseCase(notionRepository);
 const getBlockChildrenRecursiveUseCase = new GetBlockChildrenRecursiveUseCase(notionRepository);
 
+// Servicios
+const markdownConverterService = new MarkdownConverterService();
+
+// Registrar Supabase dependencies
+const supabaseMarkdownRepository = new SupabaseMarkdownRepository();
+const supabaseMarkdownService = new SupabaseMarkdownService(
+  supabaseMarkdownRepository,
+  markdownConverterService
+);
+
 // Contenedor de dependencias
 export const container = {
   // Infraestructura
@@ -72,8 +85,12 @@ export const container = {
     isDev,
     baseURL,
     defaultHeaders
-  }
+  },
+
+  // Supabase dependencies
+  supabaseMarkdownRepository,
+  supabaseMarkdownService
 };
 
 // Exportar casos de uso para uso directo
-export { getDatabaseUseCase, getUserUseCase, queryDatabaseUseCase, getPageUseCase, getBlockChildrenUseCase, getBlockChildrenRecursiveUseCase }; 
+export { getDatabaseUseCase, getUserUseCase, queryDatabaseUseCase, getPageUseCase, getBlockChildrenUseCase, getBlockChildrenRecursiveUseCase, supabaseMarkdownRepository, supabaseMarkdownService }; 

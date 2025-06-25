@@ -1,6 +1,6 @@
 import React from 'react';
 import { TestResult } from './NotionTestPage.types';
-import { NotionTestPageRepository } from './NotionTestPageRepository';
+import { NotionTestPageRepository } from '../../domain/repositories/NotionTestPageRepository';
 
 export const NotionTestButtons: React.FC<{ loading: string | null; testIds: Record<string, string>; setLoading: (loading: string | null) => void; setResults: React.Dispatch<React.SetStateAction<TestResult[]>>; }> = ({
   testIds, setLoading, setResults, loading
