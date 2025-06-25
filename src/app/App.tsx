@@ -4,6 +4,7 @@ import { VisualizerPage } from "../pages/VisualizerPage"
 import { NotionTestPage } from "../pages/NotionTestPage"
 import { Navigation } from "../components/Navigation"
 import './App.css'
+import { ConnectionPage } from '../components/ConnectionPage'
 
 function App() {
   return (
@@ -14,6 +15,7 @@ function App() {
           <Route path="/" element={<MainPage />} />
           <Route path="/visualizer" element={<VisualizerPage />} />
           <Route path="/test" element={<NotionTestPage />} />
+          <Route path="/connect" element={<ConnectionPage />} />
         </Routes>
       </div>
     </Router>

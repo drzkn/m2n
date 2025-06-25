@@ -11,7 +11,7 @@ interface MarkdownViewerProps {
   onClose?: () => void;
 }
 
-export const MarkdownViewer: React.FC<MarkdownViewerProps> = ({ markdownFiles, onClose }) => {
+export const MarkdownViewer: React.FC<MarkdownViewerProps> = ({ markdownFiles }) => {
   const [selectedFile, setSelectedFile] = useState<MarkdownFile | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
 
@@ -38,11 +38,6 @@ export const MarkdownViewer: React.FC<MarkdownViewerProps> = ({ markdownFiles, o
     <div className="markdown-viewer">
       <div className="markdown-viewer-header">
         <h2>📖 Visualizador de Markdown</h2>
-        {onClose && (
-          <button onClick={onClose} className="close-button">
-            ✕ Cerrar
-          </button>
-        )}
       </div>
 
       <div className="markdown-viewer-content">

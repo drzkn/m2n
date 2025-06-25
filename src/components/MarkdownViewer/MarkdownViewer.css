@@ -1,13 +1,14 @@
 .markdown-viewer {
   position: fixed;
   top: 0;
-  left: 0;
+  left: var(--nav-width, 60px);
   right: 0;
   bottom: 0;
   background: rgba(0, 0, 0, 0.9);
   z-index: 1000;
   display: flex;
   flex-direction: column;
+  transition: left 0.3s ease;
 }
 
 .markdown-viewer-header {
@@ -54,6 +55,7 @@
   display: flex;
   flex-direction: column;
   border-right: 1px solid #444;
+  transition: width 0.3s ease;
 }
 
 .search-container {
@@ -309,6 +311,13 @@
 
 /* Responsive */
 @media (max-width: 768px) {
+  .markdown-viewer {
+    left: 0;
+    right: 0;
+    top: 80px;
+    bottom: 0;
+  }
+
   .markdown-sidebar {
     width: 250px;
   }
@@ -322,11 +331,11 @@
   }
 
   .markdown-viewer-header {
-    padding: 1rem;
+    padding: 0.75rem 1rem;
   }
 
   .markdown-viewer-header h2 {
-    font-size: 1.25rem;
+    font-size: 1.2rem;
   }
 }
 

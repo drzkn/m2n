@@ -1,3 +1,9 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+:root {
+  /* Variables para el estado de navegación */
+  --nav-expanded: 0;
+  --nav-width: 60px;
+}

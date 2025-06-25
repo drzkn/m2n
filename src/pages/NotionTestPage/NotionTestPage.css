@@ -9,6 +9,7 @@
 
 .notion-test-page {
   width: 100%;
+  max-width: 1200px;
   padding: 2rem;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto",
     sans-serif;
@@ -16,6 +17,10 @@
   color: #333;
   overflow-x: hidden;
   box-sizing: border-box;
+  margin: 0 auto;
+  padding-left: calc(200px + 2rem);
+  padding-right: calc(200px + 2rem);
+  position: relative;
 }
 
 .home-btn-container {
@@ -386,7 +391,12 @@
 @media (max-width: 768px) {
   .notion-test-page {
     padding: 1rem;
+    padding-left: 1rem;
+    padding-right: 1rem;
     overflow-x: hidden;
+    margin-top: 80px;
+    position: relative;
+    max-width: none;
   }
 
   .header-top {
