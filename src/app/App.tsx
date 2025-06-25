@@ -1,10 +1,10 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
-import { MainPage } from "../components/MainPage"
+import { MainPage } from "../pages/MainPage"
 import { VisualizerPage } from "../pages/VisualizerPage"
 import { NotionTestPage } from "../pages/NotionTestPage"
 import { Navigation } from "../components/Navigation"
 import './App.css'
-import { ConnectionPage } from '../components/ConnectionPage'
+import { ConnectionPage } from '../pages/ConnectionPage'
 
 function App() {
   return (
