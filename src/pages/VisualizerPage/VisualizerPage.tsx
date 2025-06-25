@@ -1,12 +1,10 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { MarkdownFile } from "../../services/markdownConverter";
 import { MarkdownViewer } from '../../components/MarkdownViewer';
 import notionLogo from '../../assets/notion.svg'
 import markdownLogo from '../../assets/markdown.svg';
 
 export const VisualizerPage: React.FC = () => {
-  const navigate = useNavigate();
   const [markdownFiles, setMarkdownFiles] = useState<MarkdownFile[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -78,21 +76,6 @@ export const VisualizerPage: React.FC = () => {
           >
             🔄 Reintentar
           </button>
-          <br />
-          <button
-            onClick={() => navigate('/')}
-            style={{
-              marginTop: '0.5rem',
-              padding: '0.5rem 1rem',
-              backgroundColor: 'white',
-              color: '#646cff',
-              border: 'none',
-              borderRadius: '4px',
-              cursor: 'pointer'
-            }}
-          >
-            🏠 Volver al Inicio
-          </button>
         </div>
       </div>
     )
@@ -125,19 +108,6 @@ export const VisualizerPage: React.FC = () => {
         }}>
           🔄 Cargando archivos Markdown...
         </div>
-        <button
-          onClick={() => navigate('/')}
-          style={{
-            padding: '0.5rem 1rem',
-            backgroundColor: '#646cff',
-            color: 'white',
-            border: 'none',
-            borderRadius: '4px',
-            cursor: 'pointer'
-          }}
-        >
-          🏠 Volver al Inicio
-        </button>
       </div>
     )
   }
@@ -145,7 +115,6 @@ export const VisualizerPage: React.FC = () => {
   return (
     <MarkdownViewer
       markdownFiles={markdownFiles}
-      onClose={() => navigate('/')}
     />
   )
 } 

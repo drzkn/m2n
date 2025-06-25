@@ -8,7 +8,7 @@ import 'highlight.js/styles/vs2015.css'; // Tema oscuro para código
 
 interface MarkdownViewerProps {
   markdownFiles: MarkdownFile[];
-  onClose: () => void;
+  onClose?: () => void;
 }
 
 export const MarkdownViewer: React.FC<MarkdownViewerProps> = ({ markdownFiles, onClose }) => {
@@ -38,9 +38,11 @@ export const MarkdownViewer: React.FC<MarkdownViewerProps> = ({ markdownFiles, o
     <div className="markdown-viewer">
       <div className="markdown-viewer-header">
         <h2>📖 Visualizador de Markdown</h2>
-        <button onClick={onClose} className="close-button">
-          ✕ Cerrar
-        </button>
+        {onClose && (
+          <button onClick={onClose} className="close-button">
+            ✕ Cerrar
+          </button>
+        )}
       </div>
 
       <div className="markdown-viewer-content">

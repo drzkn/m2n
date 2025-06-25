@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import './NotionTestPage.css';
 import { TestResult } from './NotionTestPage.types';
 import { NotionTestResults } from './NotionTestResults';
@@ -7,7 +6,6 @@ import { TestInputs } from './TestInputs';
 import { NotionTestButtons } from './NotionTestButtons';
 
 const NotionTestPage: React.FC = () => {
-  const navigate = useNavigate();
   const [results, setResults] = useState<TestResult[]>([]);
   const [loading, setLoading] = useState<string | null>(null);
   const [successStates, setSuccessStates] = useState<{ [key: string]: boolean }>({});
@@ -23,16 +21,6 @@ const NotionTestPage: React.FC = () => {
 
   return (
     <div className="notion-test-page">
-      <nav className='home-btn-container'>
-        <button
-          onClick={() => navigate('/')}
-          className="home-btn"
-          title="Volver a la página inicial"
-        >
-          🏠 Inicio
-        </button>
-      </nav>
-
       <div className="test-header">
         <div className="header-top">
           <div className="header-title">
