@@ -75,23 +75,22 @@ button:focus-visible {
   min-height: 100vh;
 }
 
-/* Contenido principal con margen para la navegación lateral */
+/* Contenido principal con margen para la navegación lateral colapsable */
 .main-content {
-  margin-left: 200px;
+  margin-left: 60px;
   min-height: 100vh;
   padding: 2rem;
-  max-width: 1280px;
-  margin-right: auto;
+  width: calc(100% - 60px);
+  transition: margin-left 0.3s ease;
 }
 
-/* En móviles, volver a navegación superior */
+/* Responsive para móviles */
 @media (max-width: 768px) {
   .main-content {
     margin-left: 0;
     margin-top: 80px;
+    width: 100%;
     min-height: calc(100vh - 80px);
-    padding: 1rem;
-    margin-right: 0;
   }
 }
 

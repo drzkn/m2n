@@ -40,9 +40,10 @@ export const VisualizerPage: React.FC = () => {
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',
-        height: '100vh',
+        minHeight: '80vh',
         flexDirection: 'column',
-        gap: '1rem'
+        gap: '1rem',
+        padding: '2rem'
       }}>
         <div>
           <a href="https://notion.so" target="_blank">
@@ -87,9 +88,10 @@ export const VisualizerPage: React.FC = () => {
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',
-        height: '100vh',
+        minHeight: '80vh',
         flexDirection: 'column',
-        gap: '1rem'
+        gap: '1rem',
+        padding: '2rem'
       }}>
         <div>
           <a href="https://notion.so" target="_blank">

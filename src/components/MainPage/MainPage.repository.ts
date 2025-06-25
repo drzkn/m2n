@@ -327,7 +327,7 @@ export class MainPageRepository {
       // Resumen final con estadísticas detalladas
       this.log('success', `🎉 Sincronización completada: ${savedPages} páginas procesadas (${operationStats.created} creadas, ${operationStats.updated} actualizadas), ${errorPages} errores`);
 
-      alert(`🎉 ¡Sincronización con Supabase completada!\n\n` +
+      this.log('success', `🎉 ¡Sincronización con Supabase completada!\n\n` +
         `✨ ${operationStats.created} páginas nuevas creadas\n` +
         `🔄 ${operationStats.updated} páginas existentes actualizadas\n` +
         `❌ ${errorPages} páginas con errores\n` +

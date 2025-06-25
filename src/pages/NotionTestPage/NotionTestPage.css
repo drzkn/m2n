@@ -1,11 +1,21 @@
+/* Prevenir scroll horizontal global */
+* {
+  box-sizing: border-box;
+}
+
+.notion-test-page * {
+  max-width: 100%;
+}
+
 .notion-test-page {
-  max-width: 1200px;
-  margin: 0 auto;
+  width: 100%;
   padding: 2rem;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto",
     sans-serif;
   line-height: 1.6;
   color: #333;
+  overflow-x: hidden;
+  box-sizing: border-box;
 }
 
 .home-btn-container {
@@ -18,6 +28,8 @@
   margin-bottom: 3rem;
   padding-bottom: 2rem;
   border-bottom: 2px solid #e0e0e0;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .header-top {
@@ -25,11 +37,14 @@
   justify-content: space-between;
   align-items: flex-start;
   margin-bottom: 1.5rem;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .header-title {
   text-align: center;
   flex: 1;
+  min-width: 0;
 }
 
 .test-header h1 {
@@ -98,6 +113,8 @@
   border-radius: 1rem;
   margin-bottom: 3rem;
   border: 1px solid #e0e0e0;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .test-inputs h3 {
@@ -125,6 +142,7 @@
   font-size: 1rem;
   transition: border-color 0.2s;
   margin-bottom: 0.5rem;
+  box-sizing: border-box;
 }
 
 .input-group input:focus {
@@ -196,6 +214,8 @@
   border-radius: 1rem;
   border: 1px solid #e0e0e0;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .button-group h4 {
@@ -218,6 +238,8 @@
   transition: all 0.2s;
   font-weight: 500;
   min-width: 200px;
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
 .test-btn:hover:not(:disabled) {
@@ -293,6 +315,8 @@
   border: 1px solid #e0e0e0;
   overflow: hidden;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .result-item.success {
@@ -310,6 +334,8 @@
   padding: 1rem 1.5rem;
   background: #f8f9fa;
   border-bottom: 1px solid #e0e0e0;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .result-method {
@@ -340,6 +366,8 @@
   word-break: break-word;
   margin: 0;
   border: 1px solid #e2e8f0;
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
 .result-error {
@@ -358,16 +386,19 @@
 @media (max-width: 768px) {
   .notion-test-page {
     padding: 1rem;
+    overflow-x: hidden;
   }
 
   .header-top {
     flex-direction: column;
     align-items: center;
     gap: 1rem;
+    width: 100%;
   }
 
   .header-title {
     order: 1;
+    width: 100%;
   }
 
   .home-btn {
@@ -379,30 +410,46 @@
 
   .test-header h1 {
     font-size: 2rem;
+    word-wrap: break-word;
   }
 
   .test-controls {
     flex-direction: column;
     gap: 0.5rem;
+    width: 100%;
   }
 
   .test-btn {
     min-width: auto;
     width: 100%;
     margin-right: 0;
+    max-width: 100%;
   }
 
   .button-group {
     padding: 1rem;
+    width: 100%;
   }
 
   .result-header {
     flex-direction: column;
     align-items: flex-start;
     gap: 0.5rem;
+    width: 100%;
   }
 
   .result-json {
     font-size: 0.75rem;
+    overflow-x: auto;
+    max-width: 100%;
+  }
+
+  .test-inputs {
+    padding: 1rem;
+    width: 100%;
+  }
+
+  .input-group input {
+    width: 100%;
   }
 }
