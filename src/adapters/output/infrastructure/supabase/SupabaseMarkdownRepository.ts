@@ -131,16 +131,28 @@ export class SupabaseMarkdownRepository implements SupabaseMarkdownRepositoryInt
   }
 
   async upsert(markdownData: MarkdownPageInsert): Promise<MarkdownPage> {
+    // Primero verificar si ya existe para logging
+    const existingPage = await this.findByNotionPageId(markdownData.notion_page_id);
+    const isUpdate = existingPage !== null;
+
     const { data, error } = await supabase
       .from('markdown_pages')
       .upsert(markdownData, {
-        onConflict: 'notion_page_id'
+        onConflict: 'notion_page_id',
+        ignoreDuplicates: false // Asegurar que actualice en lugar de ignorar
       })
       .select()
       .single();
 
     if (error) {
       throw new Error(`Error al hacer upsert de página: ${error.message}`);
+    }
+
+    // Log informativo para debugging
+    if (isUpdate) {
+      console.log(`🔄 Página actualizada: ${markdownData.title} (${markdownData.notion_page_id})`);
+    } else {
+      console.log(`✨ Página creada: ${markdownData.title} (${markdownData.notion_page_id})`);
     }
 
     return data;

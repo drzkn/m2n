@@ -238,12 +238,17 @@ export class MainPageRepository {
       let completedPages = 0;
       let savedPages = 0;
       let errorPages = 0;
+      const operationStats = { created: 0, updated: 0 };
 
       const processAndSavePage = async (page: unknown, index: number): Promise<boolean> => {
         const pageTitle = this.extractPageTitle(page);
         this.log('info', `📃 [${index + 1}/${pages.length}] Procesando: ${pageTitle}`);
 
         try {
+          // Verificar si ya existe para estadísticas
+          const existingPage = await container.supabaseMarkdownRepository.findByNotionPageId((page as { id: string }).id);
+          const isUpdate = existingPage !== null;
+
           // Obtener bloques recursivos
           const blocksResult = await container.getBlockChildrenRecursiveUseCase.execute((page as { id: string }).id, {
             maxDepth: 20,
@@ -279,7 +284,14 @@ export class MainPageRepository {
           };
 
           // Guardar o actualizar en Supabase usando upsert
-          await container.supabaseMarkdownRepository.upsert(supabaseData);
+          const result = await container.supabaseMarkdownRepository.upsert(supabaseData);
+
+          // Actualizar estadísticas
+          if (isUpdate) {
+            operationStats.updated++;
+          } else {
+            operationStats.created++;
+          }
 
           // Actualizar progreso
           completedPages++;
@@ -287,10 +299,10 @@ export class MainPageRepository {
           this.setProgress({
             current: completedPages,
             total: pages.length,
-            currentPageTitle: `💾 Guardada: ${pageTitle}`
+            currentPageTitle: `💾 ${isUpdate ? 'Actualizada' : 'Creada'}: ${pageTitle}`
           });
 
-          this.log('success', `✅ [${completedPages}/${pages.length}] "${pageTitle}" guardada en Supabase (${blocksResult.totalBlocks} bloques)`);
+          this.log('success', `✅ [${completedPages}/${pages.length}] "${pageTitle}" ${isUpdate ? 'actualizada' : 'creada'} en Supabase (${blocksResult.totalBlocks} bloques) - ID: ${result.id}`);
           return true;
 
         } catch (error) {
@@ -312,14 +324,16 @@ export class MainPageRepository {
         pages.map((page, index) => processAndSavePage(page, index))
       );
 
-      // Resumen final
-      this.log('success', `🎉 Sincronización completada: ${savedPages} páginas guardadas, ${errorPages} errores`);
+      // Resumen final con estadísticas detalladas
+      this.log('success', `🎉 Sincronización completada: ${savedPages} páginas procesadas (${operationStats.created} creadas, ${operationStats.updated} actualizadas), ${errorPages} errores`);
 
       alert(`🎉 ¡Sincronización con Supabase completada!\n\n` +
-        `💾 ${savedPages} páginas guardadas exitosamente\n` +
+        `✨ ${operationStats.created} páginas nuevas creadas\n` +
+        `🔄 ${operationStats.updated} páginas existentes actualizadas\n` +
         `❌ ${errorPages} páginas con errores\n` +
         `📊 Total procesado: ${completedPages}/${pages.length}\n\n` +
-        `🗄️ Los archivos markdown están ahora disponibles en tu base de datos de Supabase.`);
+        `🗄️ Los archivos markdown están ahora disponibles en tu base de datos de Supabase.\n` +
+        `🚫 No hay duplicados: el sistema actualiza automáticamente las páginas existentes.`);
 
     } catch (error) {
       this.log('error', `💥 Error crítico: ${error instanceof Error ? error.message : 'Error desconocido'}`, error);
