@@ -1,6 +1,7 @@
 import { container } from '../../infrastructure/di/container';
 import { Page } from '../../domain/entities/Page';
 import { MarkdownPageInsert } from '../../adapters/output/infrastructure/supabase/types';
+import { SupabaseAuthService } from '../../services/auth/SupabaseAuthService';
 
 export interface MarkdownFileResult {
   pageId: string;
@@ -11,11 +12,15 @@ export interface MarkdownFileResult {
 }
 
 export class MainPageRepository {
+  private authService: SupabaseAuthService;
+
   constructor(
     private databaseId: string,
     private setIsProcessing: (processing: boolean) => void,
     private setProgress: (progress: { current: number; total: number; currentPageTitle: string } | null) => void
-  ) { }
+  ) {
+    this.authService = new SupabaseAuthService();
+  }
 
   // Función para logs con emojis y timestamp
   private log(level: 'info' | 'success' | 'warn' | 'error', message: string, data?: unknown) {
@@ -205,6 +210,18 @@ export class MainPageRepository {
     this.log('info', `🚀 Iniciando sincronización con Supabase para base de datos: ${this.databaseId}`);
 
     try {
+      // Paso 0: Verificar/Inicializar autenticación
+      this.log('info', '🔐 Verificando autenticación...');
+      const isAuthenticated = await this.authService.isAuthenticated();
+
+      if (!isAuthenticated) {
+        this.log('info', '🔑 No autenticado, iniciando sesión anónima...');
+        await this.authService.signInAnonymously();
+        this.log('success', '✅ Autenticación anónima completada');
+      } else {
+        this.log('success', '✅ Usuario ya autenticado');
+      }
+
       // Paso 1: Obtener todas las páginas de la base de datos
       this.log('info', '📊 Obteniendo páginas de la base de datos...');
       const pages = await container.queryDatabaseUseCase.execute(this.databaseId);
