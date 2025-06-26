@@ -122,14 +122,14 @@
   background: rgba(16, 185, 129, 0.9);
   color: white;
   border-bottom-right-radius: 5px;
-  box-shadow: 0 4px 16px rgba(16, 185, 129, 0.3);
+  box-shadow: 0 0px 20px rgba(16, 185, 129, 0.3);
 }
 
 .message-assistant .message-content {
-  background: rgba(255, 255, 255, 0.95);
-  color: #333;
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
   border-bottom-left-radius: 5px;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+  box-shadow: 0px 0px 20px rgba(255, 255, 255, 0.3);
 }
 
 .message-content p {
@@ -192,23 +192,24 @@
 /* Input del Chat */
 .chat-input-container {
   padding: 1rem 2rem 2rem 2rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
 }
 
 .chat-input-wrapper {
+  flex: 1;
   background: rgba(255, 255, 255, 0.1);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
   border: 1px solid rgba(255, 255, 255, 0.2);
   border-radius: 25px;
   padding: 1rem;
-  display: flex;
-  align-items: flex-end;
-  gap: 1rem;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
 }
 
 .chat-input {
-  flex: 1;
+  width: 100%;
   background: transparent;
   border: none;
   outline: none;
@@ -238,6 +239,7 @@
   transition: all 0.3s ease;
   font-size: 1.2rem;
   box-shadow: 0 4px 16px rgba(16, 185, 129, 0.3);
+  flex-shrink: 0;
 }
 
 .send-button:hover:not(:disabled) {
@@ -307,6 +309,7 @@
 
   .chat-input-container {
     padding: 1rem;
+    gap: 0.75rem;
   }
 
   .logo-small {

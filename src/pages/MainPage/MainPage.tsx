@@ -134,14 +134,14 @@ export const MainPage: React.FC = () => {
             rows={1}
             disabled={isTyping}
           />
-          <button
-            onClick={handleSendMessage}
-            disabled={!inputMessage.trim() || isTyping}
-            className="send-button"
-          >
-            {isTyping ? '⏳' : '📤'}
-          </button>
         </div>
+        <button
+          onClick={handleSendMessage}
+          disabled={!inputMessage.trim() || isTyping}
+          className="send-button"
+        >
+          {isTyping ? '⏳' : '📤'}
+        </button>
       </div>
     </div>
   )
