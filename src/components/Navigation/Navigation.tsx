@@ -1,6 +1,6 @@
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useState, useEffect } from 'react';
-import './Navigation.css';
+import styles from './Navigation.module.css';
 
 export const Navigation: React.FC = () => {
   const navigate = useNavigate();
@@ -48,20 +48,20 @@ export const Navigation: React.FC = () => {
 
   return (
     <nav
-      className={`global-navigation ${isExpanded ? 'expanded' : 'collapsed'}`}
+      className={`${styles.globalNavigation} ${isExpanded ? styles.expanded : ''}`}
       onMouseEnter={() => setIsExpanded(true)}
       onMouseLeave={() => setIsExpanded(false)}
     >
-      <div className="nav-container">
+      <div className={styles.navContainer}>
         {navigationItems.map((item) => (
           <button
             key={item.path}
             onClick={() => navigate(item.path)}
-            className={`nav-item ${location.pathname === item.path ? 'active' : ''}`}
+            className={`${styles.navItem} ${location.pathname === item.path ? styles.active : ''}`}
             title={isExpanded ? item.description : `${item.label} - ${item.description}`}
           >
-            <span className="nav-icon">{item.icon}</span>
-            {isExpanded && <span className="nav-label">{item.label}</span>}
+            <span className={styles.navIcon}>{item.icon}</span>
+            {isExpanded && <span className={styles.navLabel}>{item.label}</span>}
           </button>
         ))}
       </div>
